@@ -10,3 +10,10 @@ function plot_fitness_evolution(mean_fitness::Vector{Float64}, max_fitness::Vect
     title!(p, "Fitness Evolution")  # Titolo
     display(p)  # Mostra il grafico finale
 end
+function plot_humming_distance(distance::Vector{Float64})
+    p = plot(1:length(distance), distance, label="Distance", lw=2, color=:black, linestyle=:solid)  # Distance
+    xlabel!(p, "Iteration")  # Etichetta asse x
+    ylabel!(p, "Distance")  # Etichetta asse y
+    title!(p, "Distance Evolution")  # Titolo
+    display(p)  # Mostra il grafico finale
+end

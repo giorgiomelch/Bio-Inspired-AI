@@ -2,6 +2,34 @@ using MLJ
 using Random
 
 """
+    get_population_fitness(model, X, y, population; rng=StableRNG(123))
+
+Given a `model`, a dataset `X`, and a vector of targets `y`, compute the fitness for each individual in `population`.
+Each individual is represented by a binary vector selecting features.
+
+## Parameters:
+- `model`: An MLJ model.
+- `X`: An `n × m` matrix of features.
+- `y`: A vector of length `n` with target values.
+- `population`: A matrix of shape `(num_individuals, num_features)`, where each row is a binary vector representing an individual.
+- `rng`: A StableRNGs random number generator for reproducibility.
+
+## Returns:
+- A vector of fitness scores (one per individual).
+"""
+function get_population_fitness(model, X, y, population; rng=Random.GLOBAL_RNG)
+    fitness_scores = zeros(size(population, 1))  # Un vettore per le fitness
+
+    for i in 1:size(population, 1)
+        ind = population[i, :]  # Ottieni l'individuo i-esimo
+        X_sub = get_columns(X, ind)  # Seleziona le feature corrispondenti
+        fitness_scores[i] = get_fitness(model, X_sub, y; rng=rng)  # Calcola fitness
+    end
+
+    return fitness_scores
+end
+
+"""
     get_fitness(model, Xsub, y; rng=myRNG)
 
 
