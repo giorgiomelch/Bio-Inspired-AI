@@ -2,7 +2,7 @@ function evaluate_population(pop::Matrix{Bool}, profits::Vector{Int64}, weights:
     total_profit = pop * profits
     total_weight = pop * weights
     penalty = max.(0, total_weight .- capacity) # penalty only if total_weight > capacity
-    return total_profit .- penalty, total_weight
+    return total_profit .- (penalty.^3), total_weight
 end
 
 function weighted_sum(fitness::Vector{Int64}, weights::Vector{Int64})

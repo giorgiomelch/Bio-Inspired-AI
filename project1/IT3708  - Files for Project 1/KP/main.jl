@@ -35,6 +35,7 @@ global distance = Float64[]
 global curr_pop = initialize_population(N_POP, N_ITEMS);
 global best_fitness = 0
 global best_solution = zeros(Bool, N_ITEMS)
+println("Starting Genetic Algorithm")
 # Main Genetic Algorithm loop
 for indice=1:50
     global curr_pop
