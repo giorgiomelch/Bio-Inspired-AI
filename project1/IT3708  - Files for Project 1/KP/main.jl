@@ -61,7 +61,6 @@ for indice=1:50
     best_candidates_indices = elitism(fitness, N_POP)
     # update curr_pop
     curr_pop = curr_pop[best_candidates_indices, :]
-    
     # update fitness history
     push!(mean_fitness, mean(fitness))
     push!(max_fitness, maximum(fitness))
