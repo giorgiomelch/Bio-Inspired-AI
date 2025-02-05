@@ -8,6 +8,7 @@ function plot_fitness_evolution(mean_fitness::Vector{Float64}, max_fitness::Vect
     xlabel!(p, "Iteration")  # Etichetta asse x
     ylabel!(p, "Fitness")  # Etichetta asse y
     title!(p, "Fitness Evolution")  # Titolo
+    ylims!(p, 1, 300_000)
     display(p)  # Mostra il grafico finale
 end
 function plot_humming_distance(distance::Vector{Float64})
