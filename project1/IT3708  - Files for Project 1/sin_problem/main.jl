@@ -13,7 +13,7 @@ include("distance.jl")
 
 
 # Constants
-N_POP = 10          # Population size
+N_POP = 5        # Population size
 N_ITEMS = 15           # Number of items
 PROB_MUTATION = 0.8     # Probability of mutation
 GENES_MUTATED = 2       # Number of genes mutated per individual

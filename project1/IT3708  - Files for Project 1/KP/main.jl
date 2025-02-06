@@ -12,7 +12,7 @@ include("plots.jl")
 include("distance.jl")
 
 # Carica i dati dal file CSV
-data = CSV.read("IT3708  - Files for Project 1/KP/knapPI_12_500_1000_82.csv", DataFrame)
+data = CSV.read("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/project1/IT3708  - Files for Project 1/KP/knapPI_12_500_1000_82.csv", DataFrame)
 # Extract columns: item ID, profit, and weight
 item_ids = data[:, 1]   # Item identifiers
 profits = data[:, 2]    # Profit values

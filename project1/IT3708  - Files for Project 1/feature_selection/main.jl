@@ -23,9 +23,8 @@ myRNG = 123
 N_POP = 100
 N_ITEMS = 101
 MAX_RMSE = 0.124
-PROB_MUTATION= 0.8
+PROB_MUTATION = 0.8
 GENES_MUTATED = 4
-
 # Vettori per salvare i valori di fitness
 global mean_fitness = Float64[]
 global max_fitness = Float64[]
@@ -55,7 +54,7 @@ while best_rmse ≥ MAX_RMSE
         global best_features_selection = curr_pop[argmin(fitness), :]
         break
     end
-    crossovering_parents = roulette_wheel_selection(fitness, Int64(round(N_POP/10*8)))    # Select indices of parents to crossover
+    crossovering_parents = tournament_selection(fitness, Int64(round(N_POP/10*8)), 10)    # Select indices of parents to crossover
     offspring = two_point_crossover(curr_pop[crossovering_parents, :])  # Crossover
     curr_pop = vcat(curr_pop, offspring)
 

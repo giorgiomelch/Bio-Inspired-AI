@@ -8,6 +8,7 @@ function evaluate_population(pop::Matrix{Bool})
 
         max_value = 2^m - 1  # Valore massimo possibile con m bit
         scaled_value = (decimal_value / max_value) * 128  # Scala il valore nell'intervallo [0, 128]
+        println(scaled_value)
 
         fitness_values[i] = sin(scaled_value) 
     end
