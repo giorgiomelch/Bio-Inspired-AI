@@ -2,10 +2,10 @@ function tournament_selection(fitness::Vector{Float64}, num_parents::Int, tourna
     parents = Vector{Int}(undef, num_parents)
     for i in 1:num_parents
         # Seleziona un sottoinsieme casuale della popolazione
-        candidates = rand(1:length(fitness), tournament_size)
+        candidates = randperm(length(fitness))[1:tournament_size]
         # Trova l'individuo con il fitness massimo tra i candidati
-        best_candidate = argmax(fitness[candidates])
-        parents[i] = candidates[best_candidate]
+        best_index = argmax(fitness[candidates])
+        parents[i] = candidates[best_index]
     end
     return parents
 end
