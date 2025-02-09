@@ -1,42 +1,27 @@
-using JSON3
+using Random
+function initialize_population(problem::HomeCareRoutingProblem)
+    population = Vector{Individual}()
 
-include("myStructs.jl")
+    for _ in 1:problem.nbr_nurses
+        # Creiamo una route con il nurse assegnato e il tempo di ritorno al depot
+        route = Route(problem.nurse, problem.depot.return_time)
+        # Creiamo una copia dei pazienti e li mescoliamo per assegnazione casuale
+        shuffled_patients = shuffle(problem.patients)
 
-function load_home_care_problem(filename::String)
-    data = JSON3.read(read(filename, String))
-    # Creazione del depot
-    depot = Depot(data["depot"]["return_time"],
-                  data["depot"]["x_coord"],
-                  data["depot"]["y_coord"])
-
-    # Creazione della lista di pazienti
-    patients = [
-        Patient(parse(Int, string(pid)),  # Converte la chiave "pid" da stringa a intero
-                p["demand"],      # Legge il valore della domanda
-                p["care_time"],   # Legge il tempo di cura
-                p["start_time"],  # Legge il tempo di inizio
-                p["end_time"],    # Legge il tempo di fine
-                p["x_coord"],     # Legge la coordinata x
-                p["y_coord"])     # Legge la coordinata y
-        for (pid, p) in data["patients"]  # Itera su chiave-valore del JSON
-    ]
-
-    # Creazione della lista di infermieri
-    nurses = [Nurse(i, data["capacity_nurse"]) for i in 1:data["nbr_nurses"]]
-
-    # Creazione della matrice dei tempi di viaggio
-    travel_times = Matrix{Float64}(undef, length(data["travel_times"]), length(data["travel_times"][1]))
-    for i in 1:length(data["travel_times"])
-        for j in 1:length(data["travel_times"][i])
-            travel_times[i, j] = Float64(data["travel_times"][i][j])
+        total_demand = 0.0
+        for patient in shuffled_patients
+            if total_demand + patient.demand <= problem.nurse.capacity
+                push!(route.patients, patient)
+                total_demand += patient.demand
+            end
         end
+        # Creiamo un individuo con questa route
+        ind = Individual(route)
+        push!(population, ind)
     end
 
-    # Creazione delle rotte iniziali (vuote)
-    routes = [Route(n, depot.return_time) for n in nurses]
-    return HomeCareRoutingProblem(routes, travel_times, depot, patients)
-end
+    # Determiniamo il miglior individuo iniziale (per ora, prendiamo il primo)
+    best_individual = population[1]
 
-a = load_home_care_problem(
-                        "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/project2/data/train_1.json")
-a.travel_times[1][1]
+    return Population(population, problem.nbr_nurses, best_individual)
+end
