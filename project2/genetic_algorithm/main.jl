@@ -25,13 +25,13 @@ global min_fitness = Float64[]
 global distance = Float64[]
 
 # Initialize population
-global curr_pop = initialize_population(N_POP, N_ITEMS);
+global problem_instance = load_home_care_problem("../data/train_0.json")
 global best_fitness = 0
 global best_solution = zeros(Bool, N_ITEMS)
 println("Starting Genetic Algorithm")
 # Main Genetic Algorithm loop
 for indice=1:50
-    global curr_pop
+    global problem_instance
     global best_solution
     global best_fitness
     # Evaluate population
