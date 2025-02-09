@@ -30,9 +30,25 @@ struct Route
     end
 end
 
+mutable struct Individual
+    route::Route
+    fitness::Float64
+    is_valid::Bool
+    function Individual(route::Route)
+        new(route, 0.0, false)
+    end
+end
+
+struct Population
+    population::Vector{Individual}
+    N_POP::Int
+    best_individual::Individual
+end
+
 struct HomeCareRoutingProblem
-    routes::Vector{Route}
     travel_times::Matrix{Float64} # travel times between patients
     depot::Depot
     patients::Vector{Patient}
+    nurse::Nurse
+    nbr_nurses::Int
 end
