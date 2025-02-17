@@ -40,7 +40,7 @@ mutable struct Individual
 end
 
 struct Population
-    population::Vector{Individual}
+    individuals::Vector{Individual}
     N_POP::Int
     best_individual::Individual
 end
@@ -48,6 +48,7 @@ end
 struct HomeCareRoutingProblem
     travel_times::Matrix{Float64} # travel times between patients
     depot::Depot
+    benchmark::Float64
     patients::Vector{Patient}
     nurse::Nurse
     nbr_nurses::Int

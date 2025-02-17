@@ -1,6 +1,6 @@
 using Random
 function initialize_population(problem::HomeCareRoutingProblem)
-    population = Vector{Individual}()
+    individuals = Vector{Individual}()
 
     for _ in 1:problem.nbr_nurses
         # Creiamo una route con il nurse assegnato e il tempo di ritorno al depot
@@ -17,11 +17,11 @@ function initialize_population(problem::HomeCareRoutingProblem)
         end
         # Creiamo un individuo con questa route
         ind = Individual(route)
-        push!(population, ind)
+        push!(individuals, ind)
     end
 
     # Determiniamo il miglior individuo iniziale (per ora, prendiamo il primo)
-    best_individual = population[1]
+    best_individual = individuals[1]
 
-    return Population(population, problem.nbr_nurses, best_individual)
+    return Population(individuals, problem.nbr_nurses, best_individual)
 end

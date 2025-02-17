@@ -3,7 +3,7 @@ function calculate_fitness!(population::Population, problem::HomeCareRoutingProb
     travel_times = problem.travel_times
 
     # Itera su ogni individuo nella popolazione
-    for individual in population.population
+    for individual in population.individuals   
         route = individual.route
         total_time = 0.0
 

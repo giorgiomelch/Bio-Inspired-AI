@@ -29,8 +29,11 @@ function load_home_care_problem(filename::String)
         end
     end
 
+    benchmark = data["benchmark"]
+
     return HomeCareRoutingProblem(travel_times,
                                   depot,
+                                  benchmark,
                                   patients,
                                   nurse,
                                   nbr_nurses)
