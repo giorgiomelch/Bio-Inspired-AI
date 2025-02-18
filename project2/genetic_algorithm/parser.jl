@@ -38,6 +38,3 @@ function load_home_care_problem(filename::String)
                                   nurse,
                                   nbr_nurses)
 end
-
-a = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/project2/data/train_1.json")
-println(a.depot)
