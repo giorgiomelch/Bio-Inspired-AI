@@ -5,11 +5,10 @@ function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
     for _ in 1:N_POP
         curr_routes = Vector{Route}()
         for _ in 1:problem.nbr_nurses
-            # Creiamo una route con il nurse assegnato e il tempo di ritorno al depot
+            # Crea una route con il nurse assegnato e il tempo di ritorno al depot
             route = Route(problem.nurse, problem.depot.return_time)
-            # Creiamo una copia dei pazienti e li mescoliamo per assegnazione casuale
+            # Crea una copia dei pazienti e li mescola per assegnazione casuale
             shuffled_patients = shuffle(problem.patients)
-
             total_demand = 0.0
             for patient in shuffled_patients
                 if total_demand + patient.demand <= problem.nurse.capacity
@@ -26,5 +25,5 @@ function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
     # Determiniamo il miglior individuo iniziale (per ora, prendiamo il primo)
     best_individual = individuals[1]
 
-    return Population(individuals, problem.nbr_nurses, best_individual)
+    return Population(individuals, N_POP, best_individual)
 end
