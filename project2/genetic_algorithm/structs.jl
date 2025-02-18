@@ -24,6 +24,7 @@ struct Route
     patients::Vector{Patient}  # sequence of patients
     start_time::Float64        # departure time from the depot (fixed to 0)
     depot_return_time::Float64 # maximum time to return to the depot
+    is_valid::Bool
 
     function Route(nurse::Nurse, depot_return_time::Float64)
         new(nurse, Vector{Patient}(), 0.0, depot_return_time)
@@ -31,11 +32,11 @@ struct Route
 end
 
 mutable struct Individual
-    route::Route
+    routes::Vector{Route}
     fitness::Float64
-    is_valid::Bool
-    function Individual(route::Route)
-        new(route, 0.0, false)
+    feasible::Bool
+    function Individual(routes::Vector{Route})
+        new(routes, 0.0, true)
     end
 end
 
