@@ -19,7 +19,7 @@ struct Nurse
     capacity::Float64         # maximum strain the nurse can handle
 end
 
-struct Route
+mutable struct Route
     nurse::Nurse
     patients::Vector{Patient}  # sequence of patients
     start_time::Float64        # departure time from the depot (fixed to 0)
@@ -40,7 +40,7 @@ mutable struct Individual
     end
 end
 
-struct Population
+mutable struct Population
     individuals::Vector{Individual}
     N_POP::Int
     best_individual::Individual
