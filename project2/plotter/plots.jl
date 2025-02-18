@@ -1,6 +1,18 @@
 using Plots
 using Random
 
+function plot_fitness_evolution(pop::Population)
+    mean_fitness = pop.mean_fitness
+    min_fitness = pop.min_fitness
+    # Creazione del grafico
+    p = plot(1:length(mean_fitness), mean_fitness, label="Mean", lw=2, color=:blue, linestyle=:solid)  # Media
+    plot!(p, 1:length(min_fitness), min_fitness, label="Minimum", lw=2, color=:red, linestyle=:solid)  # Minimo
+    xlabel!(p, "Iteration")  # Etichetta asse x
+    ylabel!(p, "Fitness")  # Etichetta asse y
+    title!(p, "Fitness Evolution")  # Titolo
+    display(p)  # Mostra il grafico finale
+end
+
 function plot_routes(depot, patients, routes)
     colors = distinguishable_colors(length(routes))
     
@@ -23,11 +35,32 @@ function plot_routes(depot, patients, routes)
     # Mostra il grafico
     display(p)
 end
+using Plots
 
-# Esempio di dati
-depot = Dict(:x => 0, :y => 0)
-patients = [Dict(:x => rand(-10:10), :y => rand(-10:10)) for _ in 1:10]
-routes = [[1, 3, 5], [2, 4, 6, 8], [7, 9, 10]]
+function plot_routes2(depot::Depot, routes::Vector{Route})
+    colors = distinguishable_colors(length(routes))
 
-# Plot delle rotte
-plot_routes(depot, patients, routes)
+    # Creazione del grafico
+    p = scatter([depot.x_coord], [depot.y_coord], markershape=:circle, label="Depot", markersize=8, color=:black)
+
+    all_patients = []
+    for route in routes
+        append!(all_patients, route.patients)
+    end
+
+    scatter!(p, [p.x_coord for p in all_patients], [p.y_coord for p in all_patients],
+             markershape=:square, label="Patients", markersize=4, color=:black)
+
+    for (i, route) in enumerate(routes)
+        if !isempty(route.patients)
+            route_x = [depot.x_coord; [p.x_coord for p in route.patients]; depot.x_coord]
+            route_y = [depot.y_coord; [p.y_coord for p in route.patients]; depot.y_coord]
+            plot!(p, route_x, route_y, lw=2, label="Nurse $(route.nurse.id)", color=colors[i])
+        end
+    end
+
+    title!("Home Care Routing Solution")
+    plot!(p, legend=:topright, grid=false)
+    
+    display(p)
+end
