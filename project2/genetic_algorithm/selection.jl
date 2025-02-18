@@ -6,7 +6,7 @@ function elitism!(population::Population)
 end
 
 function tournament_selection(population::Population, num_survivors::Int, tournament_size::Int)
-    survivors = Vector{Individual}(undef, num_survivors)
+    survivors = [Individual(Vector{Route}()) for _ in 1:num_survivors]
     for i in 1:num_survivors
         # Seleziona un sottoinsieme casuale di individui
         candidates_indices = randperm(population.N_POP)[1:tournament_size]
