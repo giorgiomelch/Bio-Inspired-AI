@@ -4,7 +4,7 @@ include("initialization.jl")
 include("fitness_function.jl")
 include("mutation.jl")
 include("selection.jl")
-
+using Statistics
 
 #COSTANTS
 N_POP = 1_000
@@ -12,7 +12,7 @@ N_GEN_SWAP_MUTATION = 1
 POP_REPLACEMENT = 0.5
 
 
-# GENETIC ALGORITHM
+# TEST/DEBUG FUNZIONI
 a = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/project2/data/train_1.json")
 pop = initialize_pop_random(a, N_POP)
 update_population_fitness!(pop, a)
@@ -30,6 +30,8 @@ println("\n", length(pop.individuals))
 
 indi = tournament_selection(pop, 250, 10)
 println("\n", length(indi))
+push_mean_fitness!(pop)
+push_min_fitness!(pop)
 
 
 
@@ -51,5 +53,6 @@ function genetic_algorithm(problem::HomeCareRoutingProblem, N_POP::Int, N_GEN_SW
         elitism!(population)
         
         # TO DO - MAPPA I PROGRESSI - TO DO
+        population.push_mean_fitness!
     end
 end
