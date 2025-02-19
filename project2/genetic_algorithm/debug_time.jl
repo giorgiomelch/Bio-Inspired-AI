@@ -3,7 +3,7 @@ function debug()
     pop = initialize_pop_random(a, N_POP)
     update_population_fitness!(pop, a)
     println("\n", pop.best_individual.fitness)
-    apply_mutation!(pop, N_GEN_SWAP_MUTATION)
+    apply_mutation!(pop, N_GEN_SWAP_MUTATION,N_GEN_INVERSION)
     update_population_fitness!(pop, a)
     println("\n", pop.best_individual.fitness)
 
@@ -18,4 +18,18 @@ function debug()
     println("\n", length(indi))
     push_mean_fitness!(pop)
     push_min_fitness!(pop)
+
+    cluster = cluster_pazienti(HCP.patients, HCP.nbr_nurses)
+    println("\n", length(cluster))
+    for c in cluster
+        print(" - ", length(c))
+    end
+    println("\nNumero infermiere:", HCP.nbr_nurses)
+    individual = cluster_initialize_individual(HCP.patients, HCP.nbr_nurses, HCP.depot.return_time, HCP.nurse.capacity)
+    for (i, route) in enumerate(individual.routes)
+        println("Infermiere $(route.nurse.id): Pazienti ", [p.id for p in route.patients])
+    end
+
+    knn_initialize_population(HCP, N_POP)
+
 end
