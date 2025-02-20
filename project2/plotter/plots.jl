@@ -13,31 +13,8 @@ function plot_fitness_evolution(pop::Population)
     display(p)  # Mostra il grafico finale
 end
 
-function plot_routes(depot, patients, routes)
-    colors = distinguishable_colors(length(routes))
-    
-    # Creazione del grafico
-    p = scatter([depot[:x]], [depot[:y]], markershape=:circle, label="Depot", markersize=15, color=:black)
-    scatter!(p, [p[:x] for p in patients], [p[:y] for p in patients], markershape=:square, label="Patients", markersize=3, color=:black)
-    
-    for (i, route) in enumerate(routes)
-        if !isempty(route)
-            route_x = [depot[:x]; [patients[p][:x] for p in route]; depot[:x]]
-            route_y = [depot[:y]; [patients[p][:y] for p in route]; depot[:y]]
-            plot!(p, route_x, route_y, lw=2, color=colors[i]) #  label="Nurse $(i)",
-        end
-    end
-    
-    # Impostazioni del grafico
-    title!("Home Care Routing Solution")
-    plot!(p, legend=:topright, axis=false, grid=false)
-    
-    # Mostra il grafico
-    display(p)
-end
-using Plots
 
-function plot_routes2(depot::Depot, routes::Vector{Route})
+function plot_routes(depot::Depot, routes::Vector{Route})
     colors = distinguishable_colors(length(routes))
 
     # Creazione del grafico
@@ -55,12 +32,12 @@ function plot_routes2(depot::Depot, routes::Vector{Route})
         if !isempty(route.patients)
             route_x = [depot.x_coord; [p.x_coord for p in route.patients]; depot.x_coord]
             route_y = [depot.y_coord; [p.y_coord for p in route.patients]; depot.y_coord]
-            plot!(p, route_x, route_y, lw=2, label="Nurse $(route.nurse.id)", color=colors[i])
+            plot!(p, route_x, route_y, lw=2, color=colors[i]) #label="Nurse $(route.nurse.id)",
         end
     end
 
     title!("Home Care Routing Solution")
-    plot!(p, legend=:topright, grid=false)
+    plot!(p, legend=false, grid=false)
     
     display(p)
 end
