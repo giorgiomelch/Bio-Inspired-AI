@@ -11,8 +11,8 @@ function tournament_selection(population::Population, num_survivors::Int, tourna
         # Seleziona un sottoinsieme casuale di individui
         candidates_indices = randperm(population.N_POP)[1:tournament_size]
         individuals_in_tournament = [population.individuals[idx] for idx in candidates_indices]
-        # Trova l'individuo con il fitness massimo
-        best_individual = argmax(ind -> ind.fitness, individuals_in_tournament)
+        # Trova l'individuo con il fitness minimo
+        best_individual = argmin(ind -> ind.fitness, individuals_in_tournament)
         # Aggiungi il miglior individuo alla lista dei genitori
         survivors[i] = best_individual
     end
