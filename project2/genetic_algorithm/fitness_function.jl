@@ -1,3 +1,5 @@
+
+
 function calculate_route_time(route, travel_times)
     total_time = 0.0
     is_feasible = true
@@ -25,7 +27,7 @@ function calculate_route_time(route, travel_times)
         total_time += travel_times[last_patient.id + 1, 1]
         # PENALITA' SE I COSTRAINS NON SONO RISPETTATI
         if !is_feasible
-            total_time *=2
+            total_time *=1.5
         end
     end
     return total_time
