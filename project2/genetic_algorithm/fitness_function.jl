@@ -1,33 +1,48 @@
+function is_in_care_time_window(patient, current_time)
+    return current_time >= patient.start_time && (current_time + patient.care_time) <= patient.end_time
+end
+
+function travel_from_Pa_to_Pb!(total_time, curr_time, patient_a, patient_b, travel_times)
+    travel_time = travel_times[patient_a.id + 1, patient_b.id + 1]
+    return total_time + travel_time, curr_time + travel_time
+end
+function travel_to_from_depot_time!(total_time, curr_time, patient, travel_times)
+    travel_time = travel_times[1, patient.id + 1]
+    return total_time + travel_time, curr_time + travel_time
+end
+function wait_to_care_time!(total_time, curr_time, patient)
+    wait_time = max(0.0, patient.start_time - curr_time)
+    return total_time + wait_time, curr_time + wait_time
+end
+function care_time!(total_time, curr_time, patient, nurse_capicity)
+    total_time += patient.care_time
+    curr_time += patient.care_time
+    nurse_capicity -= patient.demand
+    return total_time, curr_time, nurse_capicity
+end
 
 function calculate_route_time(route, travel_times)
+    nurse_capicity = route.nurse.capacity
+    curr_time = 0.0
     total_time = 0.0
-    is_feasible = true
     if !isempty(route.patients)
-        nurse_capicity = route.nurse.capacity
-        # Tempo di viaggio dal deposito al primo paziente
-        first_patient = route.patients[1]
-        total_time += travel_times[1, first_patient.id + 1] + first_patient.care_time
-        # Itera sui pazienti della rotta
-        for i in 2:length(route.patients)
-            prev_patient = route.patients[i - 1]
-            current_patient = route.patients[i]
-            total_time += travel_times[prev_patient.id + 1, current_patient.id + 1] # Tempo di viaggio tra i pazienti
-            total_time += current_patient.care_time # Tempo di cura del paziente corrente
-            if total_time < current_patient.start_time || total_time > current_patient.end_time
-                is_feasible = false
-            end
-            nurse_capicity -= current_patient.demand
-            if nurse_capicity < 0
-                is_feasible = false
-            end
+        # Tempo necessario dal deposito a cura del primo paziente
+        total_time, curr_time = travel_to_from_depot_time!(total_time, curr_time, route.patients[1], travel_times)
+        total_time, curr_time = wait_to_care_time!(total_time, curr_time, route.patients[1])
+        route.feasible = is_in_care_time_window(route.patients[1], curr_time)
+        total_time, curr_time, nurse_capicity = care_time!(total_time, curr_time, route.patients[1], nurse_capicity)
+        # Itera sulla lista di pazienti 
+        for i in 2:length(route.patients) # paziente precedente: route.patients[i-1], paziente corrente: route.patients[i]
+            total_time, curr_time = travel_from_Pa_to_Pb!(total_time, curr_time, route.patients[i], route.patients[i-1], travel_times)
+            total_time, curr_time = wait_to_care_time!(total_time, curr_time, route.patients[i])
+            route.feasible = route.feasible && is_in_care_time_window(route.patients[i], curr_time)
+            total_time, curr_time, nurse_capicity = care_time!(total_time, curr_time, route.patients[i], nurse_capicity)
         end
-        # Tempo di viaggio dall'ultimo paziente al deposito
-        last_patient = route.patients[end]
-        total_time += travel_times[last_patient.id + 1, 1]
-        # PENALITA' SE I COSTRAINS NON SONO RISPETTATI
-        if !is_feasible
-            total_time *=1.5
-        end
+        # Tempo necessario dall'ultimo paziente al deposito
+        total_time, curr_time = travel_to_from_depot_time!(total_time, curr_time, route.patients[end], travel_times)
+    end
+    if !route.feasible
+        total_time *= 1.5
     end
     return total_time
 end
