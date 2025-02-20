@@ -9,10 +9,16 @@ include("debug_time.jl")
 include("genetic_algorithm.jl")
 using Statistics
 
-#COSTANTS
+#   COSTANTS
+# TERMINATION CRITERION
+N_ITER = 500
+# POP CONSTANTS
 N_POP = 1_000
 POP_REPLACEMENT = 0.5
-# COSTANTS FOR MUTATION
+# TORUNAMENT SELECTION CONSTANTS
+TOURNAMENT_SIZE = 10
+# CROSSOVER CONSTANTS
+# MUTATION COSTANTS
 N_GEN_SWAP_MUTATION = 2
 N_GEN_INVERSION = 2
 
@@ -22,4 +28,6 @@ HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorit
 
 # debug()
 
-@time genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, N_GEN_SWAP_MUTATION, N_GEN_INVERSION)
+@time genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, 
+    N_ITER,
+    N_GEN_SWAP_MUTATION, N_GEN_INVERSION)

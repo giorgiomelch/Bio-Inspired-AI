@@ -1,5 +1,4 @@
 
-
 function calculate_route_time(route, travel_times)
     total_time = 0.0
     is_feasible = true
