@@ -24,7 +24,7 @@ function plot_routes(depot, patients, routes)
         if !isempty(route)
             route_x = [depot[:x]; [patients[p][:x] for p in route]; depot[:x]]
             route_y = [depot[:y]; [patients[p][:y] for p in route]; depot[:y]]
-            plot!(p, route_x, route_y, lw=2, label="Nurse $(i)", color=colors[i])
+            plot!(p, route_x, route_y, lw=2, color=colors[i]) #  label="Nurse $(i)",
         end
     end
     
