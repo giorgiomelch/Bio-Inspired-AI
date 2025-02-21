@@ -15,7 +15,7 @@ function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
     for _ in 1:N_GEN_INVERSION
         # Scegli una rotta a caso
         route = individual.routes[rand(1:n_routes)]
-        if length(route.patients) > 2
+        if length(route.patients) >= 2
             # Seleziona un intervallo casuale e invertilo
             i, j = sort(rand(1:length(route.patients), 2)) 
             route.patients[i:j] = reverse(route.patients[i:j])
