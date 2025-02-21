@@ -13,7 +13,7 @@ using Statistics
 #   COSTANTS  #
 ###############
 # TERMINATION CRITERION
-N_ITER = 5_0000
+N_ITER = 5_00
 # POP CONSTANTS
 N_POP = 5_00
 POP_REPLACEMENT = 0.5
@@ -31,7 +31,10 @@ HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorit
 
 # debug()
 
-@time genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, 
-    N_ITER,
-    TOURNAMENT_SIZE,
-    N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
+@time best_individual = genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, 
+        N_ITER,
+        TOURNAMENT_SIZE,
+        N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
+
+print_individual_routes(best_individual)
+println("Best fitness: ", best_individual.fitness)
