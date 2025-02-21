@@ -21,7 +21,6 @@ function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
         individual = Individual(curr_routes)
         push!(individuals, individual)
     end
-
     # Determiniamo il miglior individuo iniziale (per ora, prendiamo il primo)
     best_individual = individuals[1]
 
@@ -34,7 +33,8 @@ using Clustering
 
 function cluster_pazienti(patients::Vector{Patient}, N_nurses::Int)
     # Prepara i dati per k-means
-    data = hcat([ [p.x_coord, p.y_coord] for p in patients ]...)
+    data = hcat([p.x_coord for p in patients], [p.y_coord for p in patients])'
+
     result = kmeans(data, N_nurses) # K-MEANS!!
     # Raggruppa i pazienti nei cluster assegnati
     clusters = [Patient[] for _ in 1:N_nurses]
@@ -49,7 +49,7 @@ function cluster_initialize_individual(patients::Vector{Patient},  N_nurses::Int
     clusters = cluster_pazienti(patients, N_nurses)
 
      # Crea gli infermieri
-    nurses = [Nurse(i, nurse_capacity) for i in 1:N_nurses]  # Supponiamo una capacità fissa di 10.0
+    nurses = [Nurse(i, nurse_capacity) for i in 1:N_nurses]
     # Crea le rotte per ogni infermiere
     routes = [Route(nurses[i], depot_return_time) for i in 1:N_nurses]
     # Assegna i pazienti ai rispettivi infermieri
@@ -61,12 +61,10 @@ end
 
 function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int)
     individuals = Vector{Individual}()
-    for _ in 1:(N_POP/5)
-        for _ in 1:5
-            n = rand(problem.nbr_nurses-2:problem.nbr_nurses)
-            individual = cluster_initialize_individual(problem.patients, n, problem.depot.return_time, problem.nurse.capacity)
-            push!(individuals, individual)
-        end
+    for _ in 1:N_POP
+        n = rand(problem.nbr_nurses-3:problem.nbr_nurses)
+        individual = cluster_initialize_individual(problem.patients, n, problem.depot.return_time, problem.nurse.capacity)
+        push!(individuals, individual)
     end
     best_individual = individuals[1]
     return Population(individuals, N_POP, best_individual)

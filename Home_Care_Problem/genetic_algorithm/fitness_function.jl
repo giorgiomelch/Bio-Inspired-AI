@@ -31,18 +31,21 @@ function calculate_route_time(route, travel_times)
         total_time, curr_time = wait_to_care_time!(total_time, curr_time, route.patients[1])
         route.feasible = is_in_care_time_window(route.patients[1], curr_time)
         total_time, curr_time, nurse_capicity = care_time!(total_time, curr_time, route.patients[1], nurse_capicity)
-        # Itera sulla lista di pazienti 
-        for i in 2:length(route.patients) # paziente precedente: route.patients[i-1], paziente corrente: route.patients[i]
-            total_time, curr_time = travel_from_Pa_to_Pb!(total_time, curr_time, route.patients[i], route.patients[i-1], travel_times)
-            total_time, curr_time = wait_to_care_time!(total_time, curr_time, route.patients[i])
-            route.feasible = route.feasible && is_in_care_time_window(route.patients[i], curr_time)
-            total_time, curr_time, nurse_capicity = care_time!(total_time, curr_time, route.patients[i], nurse_capicity)
+        if length(route.patients) > 1
+            # Itera sulla lista di pazienti 
+            for i in 2:length(route.patients) # paziente precedente: route.patients[i-1], paziente corrente: route.patients[i]
+                total_time, curr_time = travel_from_Pa_to_Pb!(total_time, curr_time, route.patients[i-1], route.patients[i], travel_times)
+                total_time, curr_time = wait_to_care_time!(total_time, curr_time, route.patients[i])
+                route.feasible = route.feasible && is_in_care_time_window(route.patients[i], curr_time)
+                total_time, curr_time, nurse_capicity = care_time!(total_time, curr_time, route.patients[i], nurse_capicity)
+            end
         end
+
+    if !route.feasible || nurse_capicity < 0
+        total_time *= 1.5
+    end
         # Tempo necessario dall'ultimo paziente al deposito
         total_time, curr_time = travel_to_from_depot_time!(total_time, curr_time, route.patients[end], travel_times)
-    end
-    if !route.feasible
-        total_time *= 1.5
     end
     return total_time
 end
@@ -51,8 +54,8 @@ function update_population_fitness!(population::Population, problem::HomeCareRou
     travel_times = problem.travel_times
     for individual in population.individuals
         individual.fitness = sum(calculate_route_time(route, travel_times) for route in individual.routes)
-        if individual.fitness < population.best_individual.fitness # aggiorna se migliore
-            population.best_individual = individual
+        if individual.fitness < population.best_individual.fitness # aggiorna se minore
+            population.best_individual = deepcopy(individual)
         end
     end
 end
