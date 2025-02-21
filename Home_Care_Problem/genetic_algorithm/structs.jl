@@ -39,6 +39,13 @@ mutable struct Individual
         new(routes, 0.0, true)
     end
 end
+function print_individual_routes(individual::Individual)
+    for route in individual.routes
+        # Estrai gli ID dei pazienti dalle rotte
+        patient_ids = [p.id for p in route.patients]
+        println("Route: ", patient_ids)
+    end
+end
 
 mutable struct Population
     individuals::Vector{Individual}
