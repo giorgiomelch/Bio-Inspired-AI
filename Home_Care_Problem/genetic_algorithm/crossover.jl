@@ -1,28 +1,50 @@
-function order1_crossover_(individual1::Individual, individual2::Individual)
-    # Step 1: Selezione casuale di una sottostringa
-    num_routes = length(individual1.routes)
-    start_idx = rand(1:num_routes)
-    end_idx = rand(start_idx:num_routes)
-
-    # Step 2: Copia la sottostringa nel figlio
-    child_routes = deepcopy(individual1.routes[start_idx:end_idx])
-    
-    # Step 3: Creazione di una lista di pazienti già assegnati
-    assigned_patients = Set{Int}(p.id for route in child_routes for p in route.patients)
-
-    # Step 4: Riempimento con le route di individual2 rispettando l'ordine
-    for route in individual2.routes
-        new_route = Route(route.nurse, route.depot_return_time)
-        for patient in route.patients
-            if !(patient.id in assigned_patients)
-                push!(new_route.patients, patient)
-                push!(assigned_patients, patient.id)
-            end
+function i1_i2_OX1(individual1::Individual, individual2::Individual)
+    # prendi la lista di pazienti di individual1
+    patients1 = [p for route in individual1.routes for p in route.patients]
+    # prendi la lista di pazienti di individual2  
+    patients2 = [p for route in individual2.routes for p in route.patients]
+    # Choose an arbitrary part from the first parent
+    start_idx = rand(1:length(patients1))
+    end_idx = rand(start_idx:length(patients1))
+    part = patients1[start_idx:end_idx]
+    # Create a set of patients that are already in the child
+    assigned_patients = Set{Int}(p.id for p in part)
+    # Create the child come lista di pazienti
+    child_patients = deepcopy(part)
+    # Add the remaining patients from the second parent
+    for p in patients2
+        if !(p.id in assigned_patients)
+            push!(child_patients, p)
+            push!(assigned_patients, p.id)
         end
-        push!(child_routes, new_route)
+    end
+    # Crea un nuovo individuo figlio
+    child = Individual(Vector{Route}())
+    # Distribuisci i pazienti tra le route (stessa struttura del genitore 1)
+    route_idx = 1
+    for p in child_patients
+        if route_idx > length(individual1.routes)
+            route_idx = 1  # Ciclo tra le route se necessario
+        end
+        if length(child.routes) < route_idx
+            push!(child.routes, Route(individual1.routes[route_idx].nurse, individual1.routes[route_idx].depot_return_time))
+        end
+        push!(child.routes[route_idx].patients, p)
+        route_idx += 1
     end
 
-    # Step 5: Creazione del nuovo individuo e calcolo della fitness
-    child = Individual(child_routes)
     return child
+end
+
+
+function crossover_OX1(parents::Vector{Individual})
+    nbr_offsprings = length(parents)
+    offsprings = [Individual(Vector{Route}()) for _ in 1:nbr_offsprings]
+    for i in 1:2:(length(parents)-1)
+        figlio1 = i1_i2_OX1(parents[i], parents[i+1])
+        figlio2 = i1_i2_OX1(parents[i+1], parents[i])
+        offsprings[i] = figlio1
+        offsprings[i+1] = figlio2
+    end
+    return offsprings
 end

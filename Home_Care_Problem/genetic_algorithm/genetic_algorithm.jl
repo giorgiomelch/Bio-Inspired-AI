@@ -7,13 +7,18 @@ function genetic_algorithm(
     population = knn_initialize_population(problem, N_POP)
     #population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
-    for _ in 1:N_ITER 
+    for iter in 1:N_ITER 
+        if iter % 100 == 0
+            println("Iterazione: ", iter)
+            println("Best fitness: ", population.best_individual.fitness)
+        end
         #SELZIONE GENITORI PER CROSSOVER
-        #N_gen_selected = Int(N_POP*POP_REPLACEMENT)
-        #indi = tournament_selection(population, N_gen_selected, TOURNAMENT_SIZE)
-        # TO DO - CROSSOVER - TO DO
-        # crossover!(indi)
+        N_gen_selected = Int(N_POP*POP_REPLACEMENT)
+        parents = tournament_selection(population, N_gen_selected, TOURNAMENT_SIZE)
+        # CROSSOVER
+        offsprings = crossover_OX1(parents)
         # aggiungi i figli alla popolazione
+        append!(population.individuals, offsprings)
         #MUTAZIONE
         apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
         update_population_fitness!(population, problem)
