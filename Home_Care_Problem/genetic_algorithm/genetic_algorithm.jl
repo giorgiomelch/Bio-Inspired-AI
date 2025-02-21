@@ -5,7 +5,7 @@ function genetic_algorithm(
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
 
     population = knn_initialize_population(problem, N_POP)
-    #population = initialize_pop_random(problem, N_POP)
+    population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
     for iter in 1:N_ITER 
         if iter % 100 == 0
@@ -31,4 +31,5 @@ function genetic_algorithm(
     end
     plot_routes(problem.depot, population.best_individual.routes)
     plot_fitness_evolution(population)
+    return population.best_individual
 end
