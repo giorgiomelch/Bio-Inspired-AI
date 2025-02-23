@@ -15,17 +15,17 @@ using Statistics
 # TERMINATION CRITERION
 N_ITER = 5_00
 # POP CONSTANTS
-N_POP = 5_00
-POP_REPLACEMENT = 0.5
+N_POP = 1_000
+POP_REPLACEMENT = 0.8
 # TORUNAMENT SELECTION CONSTANTS
-TOURNAMENT_SIZE = 10
+TOURNAMENT_SIZE = 20
 # CROSSOVER CONSTANTS
 # MUTATION COSTANTS
-N_GEN_SWAP_MUTATION = 1
-N_GEN_INVERSION = 1
-N_GEN_SHIFT = 1
+N_GEN_SWAP_MUTATION = 2
+N_GEN_INVERSION = 2
+N_GEN_SHIFT = 2
 
-data_train_nbr = 0
+data_train_nbr = 1
 
 HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_"* string(data_train_nbr) *".json")
 
@@ -37,4 +37,4 @@ HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorit
         N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
 
 print_individual_routes(best_individual)
-println("Best fitness: ", best_individual.fitness)
+println("Best fitness: ", best_individual.fitness, ", feasible: ", best_individual.feasible, "\nBenchmark: ", HCP.benchmark)
