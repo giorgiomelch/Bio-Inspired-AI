@@ -1,4 +1,5 @@
 using Random
+
 function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
     individuals = Vector{Individual}()
 
@@ -32,9 +33,7 @@ end
 using Clustering
 
 function cluster_pazienti(patients::Vector{Patient}, N_nurses::Int)
-    # Prepara i dati per k-means
     data = hcat([p.x_coord for p in patients], [p.y_coord for p in patients])'
-
     result = kmeans(data, N_nurses) # K-MEANS!!
     # Raggruppa i pazienti nei cluster assegnati
     clusters = [Patient[] for _ in 1:N_nurses]
@@ -47,10 +46,7 @@ end
 function cluster_initialize_individual(patients::Vector{Patient},  N_nurses::Int, depot_return_time::Float64, nurse_capacity::Float64)
     # Raggruppa i pazienti in cluster usando k-means
     clusters = cluster_pazienti(patients, N_nurses)
-
-     # Crea gli infermieri
     nurses = [Nurse(i, nurse_capacity) for i in 1:N_nurses]
-    # Crea le rotte per ogni infermiere
     routes = [Route(nurses[i], depot_return_time) for i in 1:N_nurses]
     # Assegna i pazienti ai rispettivi infermieri
     for (i, cluster) in enumerate(clusters)
@@ -62,7 +58,8 @@ end
 function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int)
     individuals = Vector{Individual}()
     for _ in 1:N_POP
-        n = rand(problem.nbr_nurses-3:problem.nbr_nurses)
+        n_min = Int(problem.nbr_nurses*0.2)
+        n = rand(n_min:problem.nbr_nurses)
         individual = cluster_initialize_individual(problem.patients, n, problem.depot.return_time, problem.nurse.capacity)
         push!(individuals, individual)
     end
