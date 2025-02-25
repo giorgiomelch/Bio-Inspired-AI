@@ -5,12 +5,13 @@ function genetic_algorithm(
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
 
     population = knn_initialize_population(problem, N_POP)
-    population = initialize_pop_random(problem, N_POP)
+    #population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
     for iter in 1:N_ITER 
         if iter % 100 == 0
             println("Iterazione: ", iter)
-            println("Best fitness: ", population.best_individual.fitness)
+            println("Mean fitness: ", population.mean_fitness[end])
+            println("Best fitness: ", population.best_individual.fitness, ", feasible: ", population.best_individual.feasible)
         end
         #SELZIONE GENITORI PER CROSSOVER
         N_gen_selected = Int(N_POP*POP_REPLACEMENT)
@@ -20,6 +21,7 @@ function genetic_algorithm(
         # aggiungi i figli alla popolazione
         append!(population.individuals, offsprings)
         #MUTAZIONE
+        #append!(population.individuals, deepcopy(population.individuals))
         apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
         update_population_fitness!(population, problem)
         #SELEZIONE SURVIVORS
