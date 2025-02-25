@@ -1,7 +1,5 @@
 function i1_i2_OX1(individual1::Individual, individual2::Individual)
-    # prendi la lista di pazienti di individual1
     patients1 = [p for route in individual1.routes for p in route.patients]
-    # prendi la lista di pazienti di individual2  
     patients2 = [p for route in individual2.routes for p in route.patients]
     # Choose an arbitrary part from the first parent
     start_idx = rand(1:length(patients1))
