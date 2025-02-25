@@ -22,6 +22,7 @@ function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
         end
     end
 end
+
 function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
     n_routes = length(individual.routes)
     for _ in 1:N_GEN_SHIFT
