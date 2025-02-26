@@ -11,7 +11,9 @@ include("../plotter/plots.jl")
 HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_0.json")
 
 
-population = knn_initialize_population(HCP, 1)
+population = knn_initialize_population(HCP, 1, 0)
+
+
 update_population_fitness!(population, HCP)
 
 print_individual_routes(population.individuals[1])
@@ -23,7 +25,6 @@ println("--------------------")
 println("--------------------")
 println("--------------------")
 println("--------------------")
-
 function funz(population, HCP)
     println("funz")
     for i in 1:100
@@ -32,4 +33,4 @@ function funz(population, HCP)
     end
     print_individual_routes(population.individuals[1])
 end
-funz(population, HCP)
+#funz(population, HCP)
