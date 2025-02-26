@@ -4,7 +4,7 @@ function genetic_algorithm(
     TOURNAMENT_SIZE::Int,
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
 
-    population = knn_initialize_population(problem, N_POP)
+    population = knn_initialize_population(problem, N_POP, 3)
     #population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
     plot_routes(problem.depot, population.best_individual.routes) # da cancellare
@@ -13,6 +13,7 @@ function genetic_algorithm(
             println("Iterazione: ", iter)
             println("Mean fitness: ", population.mean_fitness[end])
             println("Best fitness: ", population.best_individual.fitness, ", feasible: ", population.best_individual.feasible)
+            plot_routes(problem.depot, population.best_individual.routes)
         end
         #SELZIONE GENITORI PER CROSSOVER
         #N_gen_selected = Int(N_POP*POP_REPLACEMENT)
@@ -22,9 +23,11 @@ function genetic_algorithm(
         # aggiungi i figli alla popolazione
         #append!(population.individuals, offsprings)
         #MUTAZIONE
-        append!(population.individuals, deepcopy(population.individuals))
+        #append!(population.individuals, deepcopy(population.individuals))
+        parents = deepcopy(population.individuals)
         apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
         update_population_fitness!(population, problem)
+        append!(population.individuals, parents)
         #SELEZIONE SURVIVORS
         elitism!(population)
         
