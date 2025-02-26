@@ -1,35 +1,35 @@
-function debug()
-    a = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/project2/data/train_1.json")
-    pop = initialize_pop_random(a, N_POP)
-    update_population_fitness!(pop, a)
-    println("\n", pop.best_individual.fitness)
-    apply_mutation!(pop, N_GEN_SWAP_MUTATION,N_GEN_INVERSION)
-    update_population_fitness!(pop, a)
-    println("\n", pop.best_individual.fitness)
+include("structs.jl")
+include("parser.jl")
+include("genetic_algorithm.jl")
+include("initialization.jl")
+include("fitness_function.jl")
+include("selection.jl")
+include("crossover.jl")
+include("mutation.jl")
+include("../plotter/plots.jl")
 
-    println("\n", length(pop.individuals))
-    append!(pop.individuals, pop.individuals)
-    println("\n", length(pop.individuals))
+HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_0.json")
 
-    elitism!(pop)
-    println("\n", length(pop.individuals))
 
-    indi = tournament_selection(pop, 250, 10)
-    println("\n", length(indi))
-    push_mean_fitness!(pop)
-    push_min_fitness!(pop)
+population = knn_initialize_population(HCP, 1)
+update_population_fitness!(population, HCP)
 
-    cluster = cluster_pazienti(HCP.patients, HCP.nbr_nurses)
-    println("\n", length(cluster))
-    for c in cluster
-        print(" - ", length(c))
+print_individual_routes(population.individuals[1])
+mutation_shift!(population.individuals[1], 1)
+println("--------------------")
+print_individual_routes(population.individuals[1])
+println("--------------------")
+println("--------------------")
+println("--------------------")
+println("--------------------")
+println("--------------------")
+
+function funz(population, HCP)
+    println("funz")
+    for i in 1:100
+        mutation_shift!(population.individuals[1], 1)
+        update_population_fitness!(population, HCP)
     end
-    println("\nNumero infermiere:", HCP.nbr_nurses)
-    individual = cluster_initialize_individual(HCP.patients, HCP.nbr_nurses, HCP.depot.return_time, HCP.nurse.capacity)
-    for (i, route) in enumerate(individual.routes)
-        println("Infermiere $(route.nurse.id): Pazienti ", [p.id for p in route.patients])
-    end
-
-    knn_initialize_population(HCP, N_POP)
-
+    print_individual_routes(population.individuals[1])
 end
+funz(population, HCP)

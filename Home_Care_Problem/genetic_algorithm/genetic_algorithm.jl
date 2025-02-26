@@ -7,6 +7,7 @@ function genetic_algorithm(
     population = knn_initialize_population(problem, N_POP)
     #population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
+    plot_routes(problem.depot, population.best_individual.routes) # da cancellare
     for iter in 1:N_ITER 
         if iter % 100 == 0
             println("Iterazione: ", iter)
@@ -14,14 +15,14 @@ function genetic_algorithm(
             println("Best fitness: ", population.best_individual.fitness, ", feasible: ", population.best_individual.feasible)
         end
         #SELZIONE GENITORI PER CROSSOVER
-        N_gen_selected = Int(N_POP*POP_REPLACEMENT)
-        parents = tournament_selection(population, N_gen_selected, TOURNAMENT_SIZE)
+        #N_gen_selected = Int(N_POP*POP_REPLACEMENT)
+        #parents = tournament_selection(population, N_gen_selected, TOURNAMENT_SIZE)
         # CROSSOVER
-        offsprings = crossover_OX1(parents)
+        #offsprings = crossover_OX1(parents)
         # aggiungi i figli alla popolazione
-        append!(population.individuals, offsprings)
+        #append!(population.individuals, offsprings)
         #MUTAZIONE
-        #append!(population.individuals, deepcopy(population.individuals))
+        append!(population.individuals, deepcopy(population.individuals))
         apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
         update_population_fitness!(population, problem)
         #SELEZIONE SURVIVORS
@@ -31,6 +32,8 @@ function genetic_algorithm(
         push_mean_fitness!(population)
         push_min_fitness!(population)
     end
+    plot_routes(problem.depot, population.individuals[6].routes) # da cancellare
+    plot_routes(problem.depot, population.individuals[77].routes)# da cancellare
     plot_routes(problem.depot, population.best_individual.routes)
     plot_fitness_evolution(population)
     return population.best_individual
