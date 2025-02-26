@@ -24,6 +24,9 @@ mutable struct Route
     patients::Vector{Patient}  # sequence of patients
     start_time::Float64        # departure time from the depot (fixed to 0)
     depot_return_time::Float64 # maximum time to return to the depot
+    is_back_before_return_time::Bool
+    capacity_respected::Bool
+    time_windows_respected::Bool
     feasible::Bool
 
     function Route(nurse::Nurse, depot_return_time::Float64)
