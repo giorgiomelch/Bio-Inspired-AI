@@ -32,7 +32,7 @@ function calculate_route_time(route, travel_t_mtrx)
         # Tempo necessario dal deposito a cura del primo paziente
         tot_travel_time, curr_time = travel_to_from_depot_time!(tot_travel_time, curr_time, route.patients[1], travel_t_mtrx)
         curr_time = wait_to_care_time!(curr_time, route.patients[1])
-        route.feasible = is_in_care_time_window(route.patients[1], curr_time)
+        route.time_windows_respected = is_in_care_time_window(route.patients[1], curr_time)
         curr_time, nurse_capicity = care_time!(curr_time, route.patients[1], nurse_capicity)
         if length(route.patients) > 1
             # Itera sulla lista di pazienti 
@@ -46,11 +46,19 @@ function calculate_route_time(route, travel_t_mtrx)
         # Tempo necessario dall'ultimo paziente al deposito
         tot_travel_time, curr_time = travel_to_from_depot_time!(tot_travel_time, curr_time, route.patients[end], travel_t_mtrx)
     end
-    route.capacity_respected = nurse_capicity >= 0
+    route.capacity_respected = (nurse_capicity >= 0)
     route.is_back_before_return_time = is_back_before_return_time(curr_time, route.depot_return_time)
     if !(route.time_windows_respected && route.capacity_respected && route.is_back_before_return_time)
         route.feasible = false
-        #tot_travel_time *= 2
+        if !route.time_windows_respected
+            tot_travel_time *= 2
+        end
+        if !route.capacity_respected
+            tot_travel_time *= 4
+        end
+        if !route.is_back_before_return_time
+            tot_travel_time *= 4
+        end
     end
     return tot_travel_time
 end
@@ -60,9 +68,6 @@ function update_population_fitness!(population::Population, problem::HomeCareRou
     for individual in population.individuals
         individual.fitness = sum(calculate_route_time(route, travel_times) for route in individual.routes)
         individual.feasible = all(r -> r.feasible, individual.routes) # controlla se tutte le rotte sono fattibili
-        if individual.feasible
-            individual.fitness *= 2 
-        end
         if individual.fitness < population.best_individual.fitness # aggiorna se minore
             population.best_individual = deepcopy(individual)
         end
