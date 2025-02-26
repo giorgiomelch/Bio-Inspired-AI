@@ -32,20 +32,20 @@ end
 
 using Clustering
 
-function cluster_pazienti(patients::Vector{Patient}, N_nurses::Int)
+function cluster_pazienti(patients::Vector{Patient}, n_cluster::Int)
     data = hcat([p.x_coord for p in patients], [p.y_coord for p in patients])'
-    result = kmeans(data, N_nurses) # K-MEANS!!
+    result = kmeans(data, n_cluster) # K-MEANS!!
     # Raggruppa i pazienti nei cluster assegnati
-    clusters = [Patient[] for _ in 1:N_nurses]
+    clusters = [Patient[] for _ in 1:n_cluster]
     for (i, label) in enumerate(result.assignments)
         push!(clusters[label], patients[i])
     end
     return clusters
 end
 
-function cluster_initialize_individual(patients::Vector{Patient},  N_nurses::Int, depot_return_time::Float64, nurse_capacity::Float64)
+function cluster_initialize_individual(patients::Vector{Patient},  N_nurses::Int, n::Int, depot_return_time::Float64, nurse_capacity::Float64)
     # Raggruppa i pazienti in cluster usando k-means
-    clusters = cluster_pazienti(patients, N_nurses)
+    clusters = cluster_pazienti(patients, n)
     nurses = [Nurse(i, nurse_capacity) for i in 1:N_nurses]
     routes = [Route(nurses[i], depot_return_time) for i in 1:N_nurses]
     # Assegna i pazienti ai rispettivi infermieri
@@ -55,12 +55,12 @@ function cluster_initialize_individual(patients::Vector{Patient},  N_nurses::Int
     return Individual(routes)
 end
 
-function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int)
+function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int, N_CLUSTERS::Int)
     individuals = Vector{Individual}()
     for _ in 1:N_POP
-        n_min = Int(floor(problem.nbr_nurses/2))
+        n_min = problem.nbr_nurses - N_CLUSTERS
         n = rand(n_min:problem.nbr_nurses)
-        individual = cluster_initialize_individual(problem.patients, n, problem.depot.return_time, problem.nurse.capacity)
+        individual = cluster_initialize_individual(problem.patients, problem.nbr_nurses, n, problem.depot.return_time, problem.nurse.capacity)
         push!(individuals, individual)
     end
     best_individual = individuals[1]
