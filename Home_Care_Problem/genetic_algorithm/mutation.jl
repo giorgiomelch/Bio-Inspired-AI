@@ -23,25 +23,42 @@ function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
     end
 end
 
+#Esegue N_GEN_SHIFT mutazioni su un individuo modificando la disposizione dei pazienti tra le route
+# verificando che il paziente che si sta spostando non sia messo in una route con nurse con capacità piena.
+
 function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
-    n_routes = length(individual.routes)
     for _ in 1:N_GEN_SHIFT
-        if n_routes > 1
-            # Seleziona due route diverse
-            selected_routes = sample(individual.routes, 2, replace=false)
-            route_from = selected_routes[1]
-            route_to = selected_routes[2]
-            # Assicurati che la route di partenza abbia almeno un paziente da spostare
-            if !isempty(route_from.patients)
-                # Seleziona un paziente casuale
+        n_length = length(individual.routes)
+        r_idxs = shuffle!(collect(1:n_length))
+        mutation_done = false
+        ind_from = 1
+        while !mutation_done && ind_from < n_length
+            r_id = r_idxs[ind_from]
+            route_from = individual.routes[r_id]
+            if !isempty(route_from.patients) # Controlla se la route ha pazienti da spostare
                 patient_index = rand(1:length(route_from.patients))
-                patient = popat!(route_from.patients, patient_index)  # Rimuovi paziente
-                # Aggiungi il paziente alla nuova route in una posizione casuale
-                insert!(route_to.patients, rand(1:length(route_to.patients)+1), patient)
+                patient = route_from.patients[patient_index]
+                for ind_to in r_idxs
+                    if !(r_id==ind_to)
+                        route_to = individual.routes[ind_to]
+                        if route_to.capacity_respected
+                            #rimuovi paziente da route_from
+                            popat!(route_from.patients, patient_index)
+                            #aggiungi paziente a route_to 
+                            # Se route_to è vuoto, inserisci in posizione 1
+                            insert_pos = isempty(route_to.patients) ? 1 : rand(1:length(route_to.patients) + 1)
+                            insert!(route_to.patients, insert_pos, patient)
+                            mutation_done = true
+                            break
+                        end
+                    end
+                end
             end
+            ind_from += 1
         end
     end
 end
+
 
 function apply_mutation!(population::Population, 
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
