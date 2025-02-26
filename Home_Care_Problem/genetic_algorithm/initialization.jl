@@ -58,7 +58,7 @@ end
 function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int)
     individuals = Vector{Individual}()
     for _ in 1:N_POP
-        n_min = Int(problem.nbr_nurses*0.2)
+        n_min = Int(floor(problem.nbr_nurses/2))
         n = rand(n_min:problem.nbr_nurses)
         individual = cluster_initialize_individual(problem.patients, n, problem.depot.return_time, problem.nurse.capacity)
         push!(individuals, individual)
