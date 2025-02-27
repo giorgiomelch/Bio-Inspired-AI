@@ -26,6 +26,7 @@ end
 
 function calculate_route_time(route, travel_t_mtrx)
     nurse_capicity = route.nurse.capacity
+    route.feasible = true
     curr_time = 0.0
     tot_travel_time = 0.0
     if !isempty(route.patients)
