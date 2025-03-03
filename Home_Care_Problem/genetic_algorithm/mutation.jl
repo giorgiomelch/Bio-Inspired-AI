@@ -81,12 +81,40 @@ function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
     end
 end
 
+function mutation_split!(individual::Individual, PROB_SPLIT::Float64)
+    println(" ", length(individual.routes[1]))
+    println(length(filter(route -> length(route.patients) > 0, individual.routes)), " ", length(individual.routes[1]))
+    if rand() < PROB_SPLIT && length(filter(route -> length(route.patients) > 0, individual.routes)) < length(individual.routes[1])
+        println("split_mutation")
+        # Filtra le rotte non vuote e con più di 2 pazienti
+        non_empty_long_routes = filter(route -> length(route.patients) > 2, individual.routes)
+        route = non_empty_long_routes[rand(1:length(non_empty_long_routes))]
+        if length(route.patients) > 2
+            # Scegli un punto di divisione casuale (compreso tra 1 e length(patients)-1)
+            split_point = rand(1:length(route.patients)-1)
+            # Crea due nuove rotte
+            route1_patients = route.patients[1:split_point]
+            route2_patients = route.patients[split_point+1:end]
+            # Crea due nuove rotte con la stessa infermiere, ma diverse sequenze di pazienti
+            new_route1 = Route(route.nurse, route.depot_return_time)
+            new_route2 = Route(route.nurse, route.depot_return_time)
+            new_route1.patients = route1_patients
+            new_route2.patients = route2_patients
+            # Aggiungi le nuove rotte all'individuo
+            push!(individual.routes, new_route1)
+            push!(individual.routes, new_route2)
+            # Rimuovi la rotta originale
+            deleteat!(individual.routes, findfirst(x -> x == route, individual.routes))
+        end
+    end
+end
+
 
 function apply_mutation!(population::Population, 
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
     for individual in population.individuals
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
-        mutation_inversion!(individual, N_GEN_INVERSION)
+        mutation_inversion2!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
         #mutation_split!(individual, N_GEN_SHIFT, 1.0)
     end
