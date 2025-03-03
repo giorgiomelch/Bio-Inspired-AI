@@ -43,10 +43,12 @@ mutable struct Individual
     end
 end
 function print_individual_routes(individual::Individual)
+    i = 0
     for route in individual.routes
         # Estrai gli ID dei pazienti dalle rotte
         patient_ids = [p.id for p in route.patients]
-        println("Route: ", patient_ids)
+        println("Route ", i, " :", patient_ids)
+        i+=1
     end
 end
 
