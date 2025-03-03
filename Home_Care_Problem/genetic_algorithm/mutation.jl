@@ -23,7 +23,29 @@ function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
     end
 end
 
-#Esegue N_GEN_SHIFT mutazioni su un individuo modificando la disposizione dei pazienti tra le route
+function mutation_inversion2!(individual::Individual, N_GEN_INVERSION::Int64)
+    n_length = length(individual.routes)
+    for _ in 1:N_GEN_INVERSION
+        r_idxs = shuffle!(collect(1:n_length))
+        mutation_done = false
+        i = 1
+        while !mutation_done && i < n_length
+            r_id = r_idxs[i]
+            route_curr = individual.routes[r_id]
+            if length(route_curr.patients) >= 2 && !route_curr.time_windows_respected # Controlla se la route ha più di due pazienti e ha time_windows_respected false
+                # Seleziona un intervallo casuale e invertilo
+                i, j = sort(rand(1:length(route_curr.patients), 2)) 
+                route_curr.patients[i:j] = reverse(route_curr.patients[i:j])
+                mutation_done = true
+                break
+            end
+            i += 1
+        end
+    end
+end
+
+
+# Esegue N_GEN_SHIFT mutazioni su un individuo modificando la disposizione dei pazienti tra le route
 # verificando che il paziente che si sta spostando non sia messo in una route con nurse con capacità piena.
 
 function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
@@ -66,5 +88,6 @@ function apply_mutation!(population::Population,
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
         mutation_inversion!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
+        #mutation_split!(individual, N_GEN_SHIFT, 1.0)
     end
 end
