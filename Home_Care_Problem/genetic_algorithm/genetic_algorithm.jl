@@ -4,7 +4,7 @@ function genetic_algorithm(
     TOURNAMENT_SIZE::Int,
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
 
-    population = knn_initialize_population(problem, N_POP, 5)
+    population = knn_initialize_population(problem, N_POP, 10)
     #population = initialize_pop_random(problem, N_POP)
     update_population_fitness!(population, problem)
     plot_routes(problem.depot, population.best_individual.routes) # da cancellare
