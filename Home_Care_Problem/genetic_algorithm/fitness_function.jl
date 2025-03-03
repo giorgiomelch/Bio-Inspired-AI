@@ -123,6 +123,3 @@ function calc_travel_time(individual::Individual, problem::HomeCareRoutingProble
     print("Fitness: ", individual.fitness, ", feasible: ", individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, individual.routes))
 
 end
-
-1118:827=x:100
-x = 100*827/1118
