@@ -24,6 +24,7 @@ TOURNAMENT_SIZE = 5
 N_GEN_SWAP_MUTATION = 4
 N_GEN_INVERSION = 1
 N_GEN_SHIFT = 2
+PERC_SPLIT_MUTATION = 0.05
 
 data_train_nbr = 0
 for data_train_nbr in 0:9
@@ -32,7 +33,7 @@ for data_train_nbr in 0:9
         @time best_individual = genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, 
                 N_ITER,
                 TOURNAMENT_SIZE,
-                N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
+                N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT, PERC_SPLIT_MUTATION)
 
         print_individual_routes(best_individual)
         println("Best fitness: ", best_individual.fitness, ", feasible: ", best_individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, best_individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, best_individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, best_individual.routes))

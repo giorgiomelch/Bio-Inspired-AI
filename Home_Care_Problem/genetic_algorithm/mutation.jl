@@ -82,10 +82,7 @@ function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
 end
 
 function mutation_split!(individual::Individual, PROB_SPLIT::Float64)
-    println(" ", length(individual.routes[1]))
-    println(length(filter(route -> length(route.patients) > 0, individual.routes)), " ", length(individual.routes[1]))
-    if rand() < PROB_SPLIT && length(filter(route -> length(route.patients) > 0, individual.routes)) < length(individual.routes[1])
-        println("split_mutation")
+    if rand() < PROB_SPLIT && length(filter(route -> length(route.patients) > 0, individual.routes)) < length(individual.routes)
         # Filtra le rotte non vuote e con più di 2 pazienti
         non_empty_long_routes = filter(route -> length(route.patients) > 2, individual.routes)
         route = non_empty_long_routes[rand(1:length(non_empty_long_routes))]
@@ -111,11 +108,11 @@ end
 
 
 function apply_mutation!(population::Population, 
-    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
+    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
     for individual in population.individuals
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
         mutation_inversion2!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
-        #mutation_split!(individual, N_GEN_SHIFT, 1.0)
+        mutation_split!(individual, PERC_SPLIT_MUTATION)
     end
 end

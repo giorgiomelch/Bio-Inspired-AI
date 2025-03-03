@@ -2,7 +2,7 @@ function genetic_algorithm(
     problem::HomeCareRoutingProblem, N_POP::Int, POP_REPLACEMENT::Float64, 
     N_ITER::Int,
     TOURNAMENT_SIZE::Int,
-    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64)
+    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
 
     population = knn_initialize_population(problem, N_POP, 10)
     #population = initialize_pop_random(problem, N_POP)
@@ -25,7 +25,7 @@ function genetic_algorithm(
         #MUTAZIONE
         #append!(population.individuals, deepcopy(population.individuals))
         parents = deepcopy(population.individuals)
-        apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT)
+        apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT, PERC_SPLIT_MUTATION)
         update_population_fitness!(population, problem)
         append!(population.individuals, parents)
         #SELEZIONE SURVIVORS
