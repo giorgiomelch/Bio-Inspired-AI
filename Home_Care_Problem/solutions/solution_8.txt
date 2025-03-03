@@ -1,0 +1,32 @@
+Problem Number, Route, Patient IDs, Fitness, Feasible
+------------------------------------
+
+--- New Solution ---
+Route: [28, 76, 33, 81, 79, 78, 34, 29, 24, 3, 50]
+Route: [2, 57, 15, 43, 42, 87, 94, 13]
+Route: [69, 51, 9, 35, 71, 65, 66, 20, 30, 70]
+Route: [61, 16, 44, 14, 38, 86, 17, 60, 89]
+Route: [40, 21, 4, 39, 55, 25, 54, 26]
+Route: [96, 5, 84, 83]
+Route: Int64[]
+Route: [62, 19, 36, 49, 64, 11]
+Route: [27, 52, 88, 31, 10, 90, 63, 32, 1]
+Route: [56, 67, 23, 75, 41, 22, 74, 72, 73, 58]
+Route: [95, 97, 92, 59, 99, 93, 98, 37, 100, 91, 85, 6]
+Route: Int64[]
+Route: [53, 77, 68, 80, 12]
+Route: [7, 48, 47, 46, 45, 8, 82, 18]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Fitness: 1080.1309017352273
+Feasible: true
+Problem Number: 8
