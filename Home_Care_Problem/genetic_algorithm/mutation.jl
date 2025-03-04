@@ -10,7 +10,7 @@ function mutation_swap!(individual::Individual, N_GEN_SWAP_MUTATION::Int64)
         end
     end
 end
-function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
+function mutation_inversion_old!(individual::Individual, N_GEN_INVERSION::Int64)
     n_routes = length(individual.routes)
     for _ in 1:N_GEN_INVERSION
         # Scegli una rotta a caso
@@ -23,7 +23,8 @@ function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
     end
 end
 
-function mutation_inversion2!(individual::Individual, N_GEN_INVERSION::Int64)
+# esegui uno shuffle di un subset dei una rotta se time_windows_respected è false
+function mutation_inversion!(individual::Individual, N_GEN_INVERSION::Int64)
     n_length = length(individual.routes)
     for _ in 1:N_GEN_INVERSION
         r_idxs = shuffle!(collect(1:n_length))
@@ -111,7 +112,7 @@ function apply_mutation!(population::Population,
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
     for individual in population.individuals
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
-        mutation_inversion2!(individual, N_GEN_INVERSION)
+        mutation_inversion!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
         mutation_split!(individual, PERC_SPLIT_MUTATION)
     end
