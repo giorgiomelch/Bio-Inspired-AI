@@ -30,3 +30,33 @@ Route: Int64[]
 Fitness: 1416.6877535854433
 Feasible: false
 Problem Number: 5
+
+--- New Solution ---
+Route: [64, 23, 18, 19, 22, 20, 49, 24, 25, 21, 48]
+Route: [81, 61, 7, 6, 8, 46, 5, 3, 1, 4, 2, 55]
+Route: Int64[]
+Route: [65, 86, 87, 97, 59, 74, 58, 75, 77]
+Route: [69, 88, 78, 73, 79, 60, 100, 70]
+Route: [45, 12, 47, 14, 16, 15, 11, 9, 10, 13, 17]
+Route: Int64[]
+Route: Int64[]
+Route: [42, 39, 36, 38, 44, 41, 40, 35, 37, 43, 68]
+Route: [92, 62, 33, 28, 26, 27, 29, 30, 32, 31, 34, 72, 54]
+Route: [94, 67, 71, 93, 96, 80]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: [85, 63, 76, 51, 84, 89, 50, 95, 91]
+Route: [98, 53, 82, 99, 52, 57, 83, 56, 66]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: Int64[]
+Route: [90]
+Route: Int64[]
+Fitness: 1308.0735677601829
+Feasible: true
+Problem Number: 5
