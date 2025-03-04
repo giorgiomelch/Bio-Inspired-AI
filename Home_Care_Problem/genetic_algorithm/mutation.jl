@@ -115,7 +115,7 @@ function apply_mutation!(population::Population,
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
     for individual in population.individuals
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
-        mutation_inversion_old!(individual, N_GEN_INVERSION)
+        mutation_inversion!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
         mutation_split!(individual, PERC_SPLIT_MUTATION)
     end
