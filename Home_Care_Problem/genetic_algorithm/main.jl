@@ -16,7 +16,6 @@ using Statistics
 N_ITER = 10_000
 # POP CONSTANTS
 N_POP = 500
-POP_REPLACEMENT = 0.8
 # TORUNAMENT SELECTION CONSTANTS
 TOURNAMENT_SIZE = 5
 # CROSSOVER CONSTANTS
@@ -30,7 +29,7 @@ data_train_nbr = 0
 for data_train_nbr in 0:0
         HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_"* string(data_train_nbr) *".json")
 
-        @time best_individual = genetic_algorithm(HCP, N_POP, POP_REPLACEMENT, 
+        @time best_individual = genetic_algorithm(HCP, N_POP, 
                 N_ITER,
                 TOURNAMENT_SIZE,
                 N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT, PERC_SPLIT_MUTATION)
@@ -39,6 +38,6 @@ for data_train_nbr in 0:0
         println("Best fitness: ", best_individual.fitness, ", feasible: ", best_individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, best_individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, best_individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, best_individual.routes))
 
         println("\nBenchmark: ", HCP.benchmark)
-        #save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/solutions")
+        save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/solutions")
         # aumentare il numero di crossover se nelle ultime x iyterazioni non c'è stato miglioramento
 end

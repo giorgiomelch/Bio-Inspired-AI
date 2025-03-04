@@ -1,5 +1,5 @@
 function genetic_algorithm(
-    problem::HomeCareRoutingProblem, N_POP::Int, POP_REPLACEMENT::Float64, 
+    problem::HomeCareRoutingProblem, N_POP::Int, 
     N_ITER::Int,
     TOURNAMENT_SIZE::Int,
     N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
@@ -13,11 +13,6 @@ function genetic_algorithm(
             println("Mean fitness: ", population.mean_fitness[end])
             println("Best fitness: ", population.best_individual.fitness, ", feasible: ", population.best_individual.feasible)
             #plot_routes(problem.depot, population.best_individual.routes)
-            if iter % 500 ==0
-                for h in population.individuals
-                    println("Fitness: ", h.fitness, ", feasible: ", h.feasible)
-                end
-            end
         end
         #SELZIONE GENITORI PER CROSSOVER
         #N_gen_selected = Int(N_POP*POP_REPLACEMENT)
@@ -33,7 +28,6 @@ function genetic_algorithm(
         update_population_fitness!(population, problem)
         append!(population.individuals, parents)
         #SELEZIONE SURVIVORS
-        #elitism!(population) 
         elitism_tournament_survivor_selection!(population, TOURNAMENT_SIZE)
         # MAPPA I PROGRESSI
         push_mean_fitness!(population)
