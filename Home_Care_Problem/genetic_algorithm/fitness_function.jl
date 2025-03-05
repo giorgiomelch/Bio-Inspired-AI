@@ -52,7 +52,7 @@ function calculate_route_time(route, travel_t_mtrx)
     if !(route.time_windows_respected && route.capacity_respected && route.is_back_before_return_time)
         route.feasible = false
         if !route.time_windows_respected
-            tot_travel_time *= 2
+            tot_travel_time *= 10
         end
         if !route.capacity_respected
             tot_travel_time *= 4
