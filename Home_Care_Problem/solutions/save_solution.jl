@@ -18,7 +18,7 @@ function save_individual_routes(individual::Individual, filename::String, direct
         for route in individual.routes
             patient_ids = [p.id for p in route.patients]
             # Scrivi la route nel file
-            write(file, "", string(patient_ids), "\n,")
+            write(file, "", string(patient_ids), ",\n")
         end
         # Scrivi la fitness e se è feasible
         write(file, "Fitness: ", string(individual.fitness), "\n")
