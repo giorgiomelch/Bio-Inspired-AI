@@ -2,7 +2,6 @@ function genetic_algorithm(
     problem::HomeCareRoutingProblem, N_POP::Int, 
     N_ITER::Int,
     TOURNAMENT_SIZE::Int,
-    ADAPTIVE_MUT_THRESHOLD::Int,
     N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
     
     #Variabili per adaptive mutation

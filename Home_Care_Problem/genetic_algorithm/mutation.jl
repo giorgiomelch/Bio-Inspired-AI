@@ -1,14 +1,17 @@
 function adaptive_mutation!(fitness_history, ADAPTIVE_MUT_THRESHOLD, 
-    N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64,
+    N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64,
     N_SWAP_CURR::Int64, N_INVERSION_CURR::Int64, N_SHIFT_CURR::Int64, PERC_SPLIT_MUTATION_CURR::Float64)
     push!(fitness_history, population.mean_fitness[end])
     if length(fitness_history) > 6
         popfirst!(fitness_history)  # Mantieni solo le ultime 6 iterazioni
     end
-
-    if length(fitness_history) == 6
-        fitness_range = maximum(fitness_history) - minimum(fitness_history)
-        if fitness_range < ADAPTIVE_MUT_THRESHOLD  # Se la variazione è inferiore alla soglia
+    if length(fitness_history) >= 12  # Almeno 12 iterazioni per avere due blocchi di 6
+        old_fitness = fitness_history[1:6]
+        new_fitness = fitness_history[7:12]
+        
+        p_value = pvalue(OneSampleTTest(old_fitness, new_fitness))
+        
+        if p_value > 0.05  # Se le due distribuzioni sono statisticamente simili
             N_SWAP_CURR *= 2
             N_INVERSION_CURR *= 2
             N_SHIFT_CURR *= 2

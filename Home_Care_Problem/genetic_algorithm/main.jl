@@ -20,7 +20,6 @@ N_POP = 500
 TOURNAMENT_SIZE = 3
 # CROSSOVER CONSTANTS
 # MUTATION COSTANTS
-ADAPTIVE_MUT_THRESHOLD = 10
 N_SWAP_MUTATION = 1
 N_INVERSION = 1
 N_SHIFT = 1
@@ -33,7 +32,6 @@ for data_train_nbr in 0:9
         @time best_individual = genetic_algorithm(HCP, N_POP, 
                 N_ITER,
                 TOURNAMENT_SIZE,
-                ADAPTIVE_MUT_THRESHOLD,
                 N_GEN_SWAP_MUTATION, N_INVERSION, N_SHIFT, PERC_SPLIT_MUTATION)
 
         print_individual_routes(best_individual)
