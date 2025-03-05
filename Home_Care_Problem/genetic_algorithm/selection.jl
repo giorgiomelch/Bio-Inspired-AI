@@ -5,21 +5,6 @@ function elitism!(population::Population)
     population.individuals = population.individuals[1:population.N_POP]
 end
 
-function tournament_selection_OLD(population::Population, num_survivors::Int, tournament_size::Int)
-    survivors = [Individual(Vector{Route}()) for _ in 1:num_survivors]
-    for i in 1:num_survivors
-        # Seleziona un sottoinsieme casuale di individui
-        candidates_indices = randperm(population.N_POP)[1:tournament_size]
-        individuals_in_tournament = [population.individuals[idx] for idx in candidates_indices]
-        # Trova l'individuo con il fitness minimo
-        best_individual = argmin(ind -> ind.fitness, individuals_in_tournament)
-        # Aggiungi il miglior individuo alla lista dei genitori
-        survivors[i] = best_individual
-    end
-    
-    return survivors
-end
-
 function tournament_selection(population::Population, num_selected::Int, tournament_size::Int)
     selected = Vector{Individual}()
     for _ in 1:num_selected
