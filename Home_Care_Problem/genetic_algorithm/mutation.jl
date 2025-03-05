@@ -1,3 +1,17 @@
+function mutation_move!(individual::Individual, N_GEN_MOVE_MUTATION::Int64)
+    n_routes = length(individual.routes)
+    for _ in 1:N_GEN_MOVE_MUTATION
+        route = individual.routes[rand(1:n_routes)]
+        if length(route.patients) > 2
+            i = rand(1:length(route.patients)) # Scegli un paziente a caso
+            j = rand(setdiff(1:length(route.patients), i)) # Scegli una nuova posizione diversa da i
+            # Rimuovi il paziente dalla posizione originale e reinseriscilo in j
+            patient = popat!(route.patients, i)
+            insert!(route.patients, j, patient)
+        end
+    end
+end
+
 function mutation_swap!(individual::Individual, N_GEN_SWAP_MUTATION::Int64)
     n_routes = length(individual.routes)
     for _ in 1:N_GEN_SWAP_MUTATION
