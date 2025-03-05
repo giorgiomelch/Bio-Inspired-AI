@@ -1,3 +1,27 @@
+function adaptive_mutation!(fitness_history, ADAPTIVE_MUT_THRESHOLD, 
+    N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64,
+    N_SWAP_CURR::Int64, N_INVERSION_CURR::Int64, N_SHIFT_CURR::Int64, PERC_SPLIT_MUTATION_CURR::Float64)
+    push!(fitness_history, population.mean_fitness[end])
+    if length(fitness_history) > 6
+        popfirst!(fitness_history)  # Mantieni solo le ultime 6 iterazioni
+    end
+
+    if length(fitness_history) == 6
+        fitness_range = maximum(fitness_history) - minimum(fitness_history)
+        if fitness_range < ADAPTIVE_MUT_THRESHOLD  # Se la variazione è inferiore alla soglia
+            N_SWAP_CURR *= 2
+            N_INVERSION_CURR *= 2
+            N_SHIFT_CURR *= 2
+            PERC_SPLIT_MUTATION_CURR *= 2
+        else
+            N_SWAP_CURR = N_SWAP
+            N_INVERSION_CURR = N_INVERSION
+            N_SHIFT_CURR = N_SHIFT
+            PERC_SPLIT_MUTATION_CURR = PERC_SPLIT_MUTATION
+        end
+    end
+end
+
 function mutation_move!(individual::Individual, N_GEN_MOVE_MUTATION::Int64)
     n_routes = length(individual.routes)
     for _ in 1:N_GEN_MOVE_MUTATION
