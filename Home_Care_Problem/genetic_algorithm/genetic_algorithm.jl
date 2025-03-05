@@ -2,7 +2,15 @@ function genetic_algorithm(
     problem::HomeCareRoutingProblem, N_POP::Int, 
     N_ITER::Int,
     TOURNAMENT_SIZE::Int,
-    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
+    ADAPTIVE_MUT_THRESHOLD::Int,
+    N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
+    
+    #Variabili per adaptive mutation
+    N_SWAP_CURR = N_SWAP
+    N_INVERSION_CURR = N_INVERSION
+    N_SHIFT_CURR = N_SHIFT
+    PERC_SPLIT_MUTATION_CURR = PERC_SPLIT_MUTATION
+    fitness_history = []
 
     population = knn_initialize_population(problem, N_POP, 10)
     
@@ -19,12 +27,16 @@ function genetic_algorithm(
             println("Tutte le rotte rispettano la capacità: ", capacity_respected)
             println("Tutte le rotte rispettano le finestre temporali: ", time_windows_respected, ", n violazioni: ", count(route -> !route.time_windows_respected, population.best_individual.routes))
             println("Tutte le rotte tornano prima del tempo massimo: ", return_time_respected)
-            plot_routes(problem.depot, population.best_individual.routes)
+            
+            #plot_routes(problem.depot, population.best_individual.routes)
         end
         # CROSSOVER
         crossover_pop!(population, problem.travel_times)
         #MUTAZIONE
-        apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT, PERC_SPLIT_MUTATION)
+        adaptive_mutation!(fitness_history, ADAPTIVE_MUT_THRESHOLD,
+            N_SWAP, N_INVERSION, N_SHIFT, PERC_SPLIT_MUTATION,
+            N_SWAP_CURR, N_INVERSION_CURR, N_SHIFT_CURR, PERC_SPLIT_MUTATION_CURR)
+        apply_mutation!(population, N_SWAP_CURR, N_INVERSION_CURR, N_SHIFT_CURR, PERC_SPLIT_MUTATION_CURR)
         update_population_fitness!(population, problem)
         #SELEZIONE SURVIVORS
         elitism_tournament_survivor_selection!(population, TOURNAMENT_SIZE)
