@@ -61,21 +61,13 @@ function crossover_pop!(population::Population, travel_times::Matrix{Float64})
     sort!(population.individuals, by=i -> i.fitness)
     population.individuals = deepcopy(population.individuals[1:population.N_POP])
     shuffle!(population.individuals)
-    new_individuals = Individual[]  # Nuova lista di individui generati
-
+    new_individuals = Individual[]  
     for i in 1:2:length(population.individuals)-1
         parent1 = population.individuals[i]
         parent2 = population.individuals[i+1]
-
-        # Generiamo due figli con crossover
         child1, child2 = crossover(parent1, parent2, travel_times)
 
         push!(new_individuals, child1, child2)
-    end
-
-    # Se la popolazione diventa più grande di N_POP, la riduciamo
-    if length(new_individuals) > population.N_POP
-        new_individuals = new_individuals[1:population.N_POP]
     end
     # Aggiungiamo i nuovi individui alla popolazione
     append!(population.individuals, new_individuals)
