@@ -13,11 +13,11 @@ using Statistics
 #   COSTANTS  #
 ###############
 # TERMINATION CRITERION
-N_ITER = 10_000
+N_ITER = 50_000
 # POP CONSTANTS
-N_POP = 500
+N_POP = 250
 # TORUNAMENT SELECTION CONSTANTS
-TOURNAMENT_SIZE = 5
+TOURNAMENT_SIZE = 3
 # CROSSOVER CONSTANTS
 # MUTATION COSTANTS
 N_GEN_SWAP_MUTATION = 4
@@ -39,5 +39,4 @@ for data_train_nbr in 0:0
 
         println("\nBenchmark: ", HCP.benchmark)
         save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/solutions")
-        # aumentare il numero di crossover se nelle ultime x iyterazioni non c'è stato miglioramento
 end
