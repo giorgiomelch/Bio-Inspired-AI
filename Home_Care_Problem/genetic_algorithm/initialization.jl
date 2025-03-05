@@ -22,7 +22,6 @@ function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
         individual = Individual(curr_routes)
         push!(individuals, individual)
     end
-    # Determiniamo il miglior individuo iniziale (per ora, prendiamo il primo)
     best_individual = individuals[1]
 
     return Population(individuals, N_POP, best_individual)
