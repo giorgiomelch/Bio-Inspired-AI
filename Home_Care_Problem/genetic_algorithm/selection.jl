@@ -20,18 +20,6 @@ function tournament_selection_OLD(population::Population, num_survivors::Int, to
     return survivors
 end
 
-function elitism_tournament_survivor_selection!(population::Population, tournament_size::Int)
-    # Ordina la popolazione per fitness (migliori prima)
-    sort!(population.individuals, by=i -> i.fitness)
-    # Determina il numero di individui da mantenere per elitismo (10%)
-    elite_count = max(1, Int(ceil(1 * population.N_POP))) 
-    elite_individuals = population.individuals[1:elite_count]
-    # Selezione torneo per il resto della popolazione
-    remaining_count = population.N_POP - elite_count
-    tournament_winners = tournament_selection(population, remaining_count, tournament_size)
-    population.individuals = vcat(elite_individuals, tournament_winners)
-end
-
 function tournament_selection(population::Population, num_selected::Int, tournament_size::Int)
     selected = Vector{Individual}()
     for _ in 1:num_selected
@@ -39,7 +27,19 @@ function tournament_selection(population::Population, num_selected::Int, tournam
         tournament = rand(population.individuals, tournament_size)
         # Sceglie il migliore nel torneo
         best = sort(tournament, by=i -> i.fitness)[1]
-        push!(selected, best)
+        push!(selected, deepcopy(best))
     end
     return selected
+end
+
+function elitism_tournament_survivor_selection!(population::Population, tournament_size::Int)
+    # Ordina la popolazione per fitness
+    sort!(population.individuals, by=i -> i.fitness)
+    # Determina il numero di individui da mantenere per elitismo (10%)
+    elite_count = max(1, Int(ceil(0.1 * population.N_POP)))
+    elite_individuals = population.individuals[1:elite_count]
+    # Selezione torneo per il resto della popolazione
+    remaining_count = population.N_POP - elite_count
+    tournament_winners = tournament_selection(population, remaining_count, tournament_size)
+    population.individuals = vcat(elite_individuals, tournament_winners)
 end
