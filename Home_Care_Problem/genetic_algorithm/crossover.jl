@@ -1,3 +1,147 @@
+function best_insertion(individual::Individual, patient::Patient, travel_times::Matrix{Float64})
+    best_route = nothing
+    best_cost = Inf
+    for route in individual.routes
+        for i in 1:(length(route.patients)+1)
+            insert!(route.patients, i, patient)
+            new_cost = sum(calculate_route_time(route, travel_times) for route in individual.routes)
+            if new_cost < best_cost
+                best_cost = new_cost
+                ind_best_insertion = deepcopy(individual)
+            end
+            deleteat!(route.patients, i)
+        end
+    end
+    return ind_best_insertion
+end
+
+
+function crossover(indA::Individual, indB::Individual)
+    indA = deepcopy(indA)
+    indB = deepcopy(indB)
+    # select a random route from each individual
+    routeA = indA.routes[rand(1:length(indA.routes))]
+    routeB = indB.routes[rand(1:length(indB.routes))]
+    # identify the patients in the selected routes
+    patientsA = routeA.patients
+    patientsB = routeB.patients
+    # remove the patients from the routes
+    routeA.patients = []
+    routeB.patients = []
+    # for each patient without a route find the best insertion 
+    indA = best_insertion(indA, patientsB[1], travel_times)
+    indB = best_insertion(indB, patientsA[1], travel_times)
+    return indA, indB
+end
+
+function crossover_pop!(population::Population, travel_times::Matrix{Float64})
+    # Ordina la popolazione per fitness
+    sort!(population.individuals, by=i -> i.fitness)
+    # Determina il numero di individui da mantenere per elitismo (10%)
+    elite_count = max(1, Int(ceil(1 * population.N_POP))) 
+    elite_individuals = population.individuals[1:elite_count]
+    for ind in population.individuals
+        
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function i1_i2_OX1(individual1::Individual, individual2::Individual)
     patients1 = [p for route in individual1.routes for p in route.patients]
     patients2 = [p for route in individual2.routes for p in route.patients]
