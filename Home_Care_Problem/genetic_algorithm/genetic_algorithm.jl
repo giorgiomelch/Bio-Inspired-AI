@@ -22,7 +22,6 @@ function genetic_algorithm(
         # aggiungi i figli alla popolazione
         #append!(population.individuals, offsprings)
         #MUTAZIONE
-        #append!(population.individuals, deepcopy(population.individuals))
         parents = deepcopy(population.individuals)
         apply_mutation!(population, N_GEN_SWAP_MUTATION, N_GEN_INVERSION, N_GEN_SHIFT, PERC_SPLIT_MUTATION)
         update_population_fitness!(population, problem)
