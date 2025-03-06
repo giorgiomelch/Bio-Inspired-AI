@@ -56,11 +56,16 @@ mutable struct Population
     individuals::Vector{Individual}
     N_POP::Int
     best_individual::Individual
+    std_dev_fitness::Vector{Float64}
     mean_fitness::Vector{Float64}
     min_fitness::Vector{Float64}
     function Population(individuals::Vector{Individual}, N_POP::Int, best_individual::Individual)
-        new(individuals, N_POP, best_individual, Vector{Float64}(), Vector{Float64}())
+        new(individuals, N_POP, best_individual, Vector{Float64}(), Vector{Float64}(), Vector{Float64}())
     end    
+end
+function push_std_dev_fitness!(population::Population)
+    mean_fitness = std(ind.fitness for ind in population.individuals)
+    push!(population.mean_fitness, mean_fitness)
 end
 function push_mean_fitness!(population::Population)
     mean_fitness = mean(ind.fitness for ind in population.individuals)
