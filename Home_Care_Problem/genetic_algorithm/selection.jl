@@ -21,7 +21,7 @@ function elitism_tournament_survivor_selection!(population::Population, tourname
     # Ordina la popolazione per fitness
     sort!(population.individuals, by=i -> i.fitness)
     # Determina il numero di individui da mantenere per elitismo (10%)
-    elite_count = max(1, Int(ceil(0.1 * population.N_POP)))
+    elite_count = max(1, Int(ceil(0.2 * population.N_POP)))
     elite_individuals = population.individuals[1:elite_count]
     # Selezione torneo per il resto della popolazione
     remaining_count = population.N_POP - elite_count
