@@ -1,17 +1,16 @@
+using HypothesisTests
+
 function adaptive_mutation!(fitness_history, 
     N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64,
     N_SWAP_CURR::Int64, N_INVERSION_CURR::Int64, N_SHIFT_CURR::Int64, PERC_SPLIT_MUTATION_CURR::Float64)
 
-    if length(fitness_history) > 6
-        popfirst!(fitness_history)  # Mantieni solo le ultime 6 iterazioni
-    end
     if length(fitness_history) >= 12  # Almeno 12 iterazioni per avere due blocchi di 6
         old_fitness = fitness_history[1:6]
         new_fitness = fitness_history[7:12]
         p_value = pvalue(OneSampleTTest(old_fitness, new_fitness))
-        println(p_value)
+        print(p_value)
         if p_value > 0.05
-            println("Simili")
+            println("   p_value>0.05!")
             N_SWAP_CURR *= 2
             N_INVERSION_CURR *= 2
             N_SHIFT_CURR *= 2
@@ -22,6 +21,8 @@ function adaptive_mutation!(fitness_history,
             N_SHIFT_CURR = N_SHIFT
             PERC_SPLIT_MUTATION_CURR = PERC_SPLIT_MUTATION
         end
+
+        popfirst!(fitness_history)  # Mantieni solo le ultime 12 iterazioni
     end
 end
 
