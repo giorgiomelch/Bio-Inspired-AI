@@ -7,8 +7,10 @@ function adaptive_mutation!(fitness_history,
     if length(fitness_history) >= 12  # Almeno 12 iterazioni per avere due blocchi di 6
         old_fitness = fitness_history[1:6]
         new_fitness = fitness_history[7:12]
+        old_fitness = Float64.(old_fitness)
+        new_fitness = Float64.(new_fitness)
         p_value = pvalue(OneSampleTTest(old_fitness, new_fitness))
-        print(p_value)
+        println(p_value)
         if p_value > 0.05
             println("   p_value>0.05!")
             N_SWAP_CURR *= 2
