@@ -1,30 +1,26 @@
 using Random
 
-function initialize_pop_random(problem::HomeCareRoutingProblem, N_POP::Int)
-    individuals = Vector{Individual}()
+function random_initialize_population(problem::HomeCareRoutingProblem, num_individuals::Int)
+    patients = problem.patients
+    nurse_capacity = problem.nurse.capacity
+    N_nurses = problem.nbr_nurses
+    depot_return_time = problem.depot.return_time
 
-    for _ in 1:N_POP
-        curr_routes = Vector{Route}()
-        for _ in 1:problem.nbr_nurses
-            # Crea una route con il nurse assegnato e il tempo di ritorno al depot
-            route = Route(problem.nurse, problem.depot.return_time)
-            # Crea una copia dei pazienti e li mescola per assegnazione casuale
-            shuffled_patients = shuffle(problem.patients)
-            total_demand = 0.0
-            for patient in shuffled_patients
-                if total_demand + patient.demand <= problem.nurse.capacity
-                    push!(route.patients, patient)
-                    total_demand += patient.demand
-                end
-            end
-            push!(curr_routes, route)
+    population = Vector{Individual}()
+    nurses = [Nurse(i, nurse_capacity) for i in 1:N_nurses]
+
+    for _ in 1:num_individuals
+        routes = [Route(nurse, depot_return_time) for nurse in nurses]
+        # Distribuiamo i pazienti casualmente tra le rotte
+        shuffled_patients = shuffle(patients)
+        for (i, patient) in enumerate(shuffled_patients)
+            route_index = rand(1:length(routes))  # Seleziona una rotta a caso
+            push!(routes[route_index].patients, patient)
         end
-        individual = Individual(curr_routes)
-        push!(individuals, individual)
+        individual = Individual(routes)
+        push!(population, individual)
     end
-    best_individual = individuals[1]
-
-    return Population(individuals, N_POP, best_individual)
+    return population
 end
 
 
@@ -64,4 +60,15 @@ function knn_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int, 
     end
     best_individual = individuals[1]
     return Population(individuals, N_POP, best_individual)
+end
+
+function mixed_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int, N_CLUSTERS::Int)
+    cluster_pop = knn_initialize_population(problem, N_POP, N_CLUSTERS)
+    random_individuals = random_initialize_population(problem, Int(N_POP/2))
+    shuffle!(cluster_pop.individuals)
+    println(length(cluster_pop.individuals))
+    println(length(cluster_pop.individuals[Int(N_POP/2+1):end]))
+    println(length(random_individuals))
+    cluster_pop.individuals[Int(N_POP/2+1):end] .= random_individuals
+    return cluster_pop
 end
