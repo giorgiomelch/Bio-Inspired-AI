@@ -1,8 +1,8 @@
 using HypothesisTests
 
 function adaptive_mutation!(fitness_history, 
-    N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64,
-    N_SWAP_CURR::Int64, N_INVERSION_CURR::Int64, N_SHIFT_CURR::Int64, PERC_SPLIT_MUTATION_CURR::Float64)
+    N_MOVE::Int64, N_SWAP::Int64, N_INVERSION::Int64, N_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64,
+    N_MOVE_CURR::Int64, N_SWAP_CURR::Int64, N_INVERSION_CURR::Int64, N_SHIFT_CURR::Int64, PERC_SPLIT_MUTATION_CURR::Float64)
 
     if length(fitness_history) >= 12  # Almeno 12 iterazioni per avere due blocchi di 6
         old_fitness = fitness_history[1:6]
@@ -10,21 +10,20 @@ function adaptive_mutation!(fitness_history,
         old_fitness = Float64.(old_fitness)
         new_fitness = Float64.(new_fitness)
         p_value = pvalue(OneSampleTTest(old_fitness, new_fitness))
-        println(p_value)
         if p_value > 0.05
-            println("   p_value>0.05!")
+            N_MOVE_CURR *=2
             N_SWAP_CURR *= 2
             N_INVERSION_CURR *= 2
             N_SHIFT_CURR *= 2
             PERC_SPLIT_MUTATION_CURR *= 2
         else
+            N_MOVE_CURR =N_MOVE
             N_SWAP_CURR = N_SWAP
             N_INVERSION_CURR = N_INVERSION
             N_SHIFT_CURR = N_SHIFT
             PERC_SPLIT_MUTATION_CURR = PERC_SPLIT_MUTATION
         end
-
-        popfirst!(fitness_history)  # Mantieni solo le ultime 12 iterazioni
+        popfirst!(fitness_history)
     end
 end
 
@@ -92,7 +91,6 @@ end
 
 # Esegue N_GEN_SHIFT mutazioni su un individuo modificando la disposizione dei pazienti tra le route
 # verificando che il paziente che si sta spostando non sia messo in una route con nurse con capacità piena.
-
 function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
     for _ in 1:N_GEN_SHIFT
         n_length = length(individual.routes)
@@ -111,8 +109,7 @@ function mutation_shift!(individual::Individual, N_GEN_SHIFT::Int64)
                         if route_to.capacity_respected
                             #rimuovi paziente da route_from
                             popat!(route_from.patients, patient_index)
-                            #aggiungi paziente a route_to 
-                            # Se route_to è vuoto, inserisci in posizione 1
+                            #aggiungi paziente a route_to, se route_to è vuoto, inserisci in posizione 1
                             insert_pos = isempty(route_to.patients) ? 1 : rand(1:length(route_to.patients) + 1)
                             insert!(route_to.patients, insert_pos, patient)
                             mutation_done = true
@@ -156,10 +153,11 @@ end
 
 
 function apply_mutation!(population::Population, 
-    N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
+    N_MOVE::Int64, N_GEN_SWAP_MUTATION::Int64, N_GEN_INVERSION::Int64, N_GEN_SHIFT::Int64, PERC_SPLIT_MUTATION::Float64)
     for individual in population.individuals
+        mutation_move!(individual, N_MOVE)
         mutation_swap!(individual, N_GEN_SWAP_MUTATION)
-        mutation_inversion!(individual, N_GEN_INVERSION)
+        mutation_inversion_old!(individual, N_GEN_INVERSION)
         mutation_shift!(individual, N_GEN_SHIFT)
         mutation_split!(individual, PERC_SPLIT_MUTATION)
     end
