@@ -31,8 +31,7 @@ function genetic_algorithm(
         end
         # CROSSOVER
         crossover_pop!(population, problem.travel_times)
-        #MUTAZIONE
-        adaptive_mutation!(fitness_history, ADAPTIVE_MUT_THRESHOLD,
+        adaptive_mutation!(fitness_history,
             N_SWAP, N_INVERSION, N_SHIFT, PERC_SPLIT_MUTATION,
             N_SWAP_CURR, N_INVERSION_CURR, N_SHIFT_CURR, PERC_SPLIT_MUTATION_CURR)
         apply_mutation!(population, N_SWAP_CURR, N_INVERSION_CURR, N_SHIFT_CURR, PERC_SPLIT_MUTATION_CURR)
@@ -42,6 +41,7 @@ function genetic_algorithm(
         # MAPPA I PROGRESSI
         push_mean_fitness!(population)
         push_min_fitness!(population)
+        push!(fitness_history, population.mean_fitness[end])
     end
     plot_routes(problem.depot, population.best_individual.routes)
     plot_fitness_evolution(population)
