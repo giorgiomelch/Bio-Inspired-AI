@@ -26,17 +26,18 @@ N_SHIFT = 1
 PERC_SPLIT_MUTATION = 0.1
 
 data_train_nbr = 0
-for data_train_nbr in 0:9
-        HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_"* string(data_train_nbr) *".json")
+for data_train_nbr in 0:2
+        #HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_"* string(data_train_nbr) *".json")HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_"* string(data_train_nbr) *".json")
+        HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/test/test_"* string(data_train_nbr) *".json")
 
         @time best_individual = genetic_algorithm(HCP, N_POP, 
                 N_ITER,
                 TOURNAMENT_SIZE,
-                N_GEN_SWAP_MUTATION, N_INVERSION, N_SHIFT, PERC_SPLIT_MUTATION)
+                N_SWAP_MUTATION, N_INVERSION, N_SHIFT, PERC_SPLIT_MUTATION)
 
         print_individual_routes(best_individual)
         println("Best fitness: ", best_individual.fitness, ", feasible: ", best_individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, best_individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, best_individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, best_individual.routes))
 
         println("\nBenchmark: ", HCP.benchmark)
-        save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/solutions")
+        save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/TEST_solutions")
 end
