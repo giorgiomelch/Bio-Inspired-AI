@@ -66,9 +66,7 @@ function mixed_initialize_population(problem::HomeCareRoutingProblem, N_POP::Int
     cluster_pop = knn_initialize_population(problem, N_POP, N_CLUSTERS)
     random_individuals = random_initialize_population(problem, Int(N_POP/2))
     shuffle!(cluster_pop.individuals)
-    println(length(cluster_pop.individuals))
-    println(length(cluster_pop.individuals[Int(N_POP/2+1):end]))
-    println(length(random_individuals))
     cluster_pop.individuals[Int(N_POP/2+1):end] .= random_individuals
+    cluster_pop.best_individual = cluster_pop.individuals[1]
     return cluster_pop
 end
