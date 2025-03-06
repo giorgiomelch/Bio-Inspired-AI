@@ -64,8 +64,8 @@ mutable struct Population
     end    
 end
 function push_std_dev_fitness!(population::Population)
-    mean_fitness = std(ind.fitness for ind in population.individuals)
-    push!(population.mean_fitness, mean_fitness)
+    std_dev_fitness = std(ind.fitness for ind in population.individuals)
+    push!(population.std_dev_fitness, std_dev_fitness)
 end
 function push_mean_fitness!(population::Population)
     mean_fitness = mean(ind.fitness for ind in population.individuals)
