@@ -29,6 +29,13 @@ function calculate_route_time(route, travel_t_mtrx)
     route.feasible = true
     curr_time = 0.0
     tot_travel_time = 0.0
+
+    if isempty(route.patients)
+        route.time_windows_respected = true
+        route.capacity_respected = true
+        route.is_back_before_return_time = true
+        return tot_travel_time
+    end
     if !isempty(route.patients)
         # Tempo necessario dal deposito a cura del primo paziente
         tot_travel_time, curr_time = travel_to_from_depot_time!(tot_travel_time, curr_time, route.patients[1], travel_t_mtrx)
@@ -52,13 +59,13 @@ function calculate_route_time(route, travel_t_mtrx)
     if !(route.time_windows_respected && route.capacity_respected && route.is_back_before_return_time)
         route.feasible = false
         if !route.time_windows_respected
-            tot_travel_time *= 6
+            tot_travel_time *= 3
         end
         if !route.capacity_respected
-            tot_travel_time *= 4
+            tot_travel_time *= 3
         end
         if !route.is_back_before_return_time
-            tot_travel_time *= 4
+            tot_travel_time *= 3
         end
     end
     return tot_travel_time
@@ -113,13 +120,36 @@ function calculate_route_travel_time(route, travel_t_mtrx)
     if !(route.time_windows_respected && route.capacity_respected && route.is_back_before_return_time)
         route.feasible = false
     end
-    return tot_travel_time
+    return tot_travel_time , route.nurse.capacity - nurse_capicity
 end
 
-function calc_travel_time(individual::Individual, problem::HomeCareRoutingProblem)
-    travel_times = problem.travel_times
-    individual.fitness = sum(calculate_route_travel_time(route, travel_times) for route in individual.routes)
-    individual.feasible = all(r -> r.feasible, individual.routes) # controlla se tutte le rotte sono fattibili
-    print("Fitness: ", individual.fitness, ", feasible: ", individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, individual.routes))
+function show_solution(individual::Individual, problem::HomeCareRoutingProblem)
+    println("Soluzione trovata:")
+    for (i, route) in enumerate(individual.routes)
+        tot_travel_time, cover_demand = calculate_route_travel_time(route, problem.travel_times)
+        patient_ids = [p.id for p in route.patients]
+        
+        println("-----------------------------")
+        println("Nurse ", i, ":")
+        println("  - Route duration: ", tot_travel_time)
+        println("  - Cover demand: ", cover_demand)
+        println("  - Patients: ", patient_ids)
+        println("  - Fattibile: ", route.feasible ? "Sì" : "No")
+    end
+end
+function save_show_solution(individual::Individual, problem::HomeCareRoutingProblem)
+    filename = "save_sol"
+    open(filename, "a") do io
+        
+    for (i, route) in enumerate(individual.routes)
+        tot_travel_time, cover_demand = calculate_route_travel_time(route, problem.travel_times)
+        patient_ids = [p.id for p in route.patients]
 
+            println(io, "Route Index: $i")
+            println(io, "  Duration: $tot_travel_time")
+            println(io, "  Covered Demand: $cover_demand")
+            println(io, "  Patients: $patient_ids")
+            println(io)  # Riga vuota per separare le rotte
+        end
+    end
 end
