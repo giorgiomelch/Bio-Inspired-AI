@@ -17,7 +17,7 @@ function adaptive_mutation!(fitness_history,
             N_SHIFT_CURR *= 2
             PERC_SPLIT_MUTATION_CURR *= 2
         else
-            N_MOVE_CURR =N_MOVE
+            N_MOVE_CURR = N_MOVE
             N_SWAP_CURR = N_SWAP
             N_INVERSION_CURR = N_INVERSION
             N_SHIFT_CURR = N_SHIFT
