@@ -2,7 +2,7 @@ Problem Number, Route, Patient IDs, Fitness, Feasible
 ------------------------------------
 900 
 945 5% 
-990 10% 958
+990 10% 959
 1080 20%
 1170 30%
 
