@@ -1,36 +1,18 @@
 include("structs.jl")
 include("parser.jl")
-include("genetic_algorithm.jl")
 include("initialization.jl")
 include("fitness_function.jl")
-include("selection.jl")
-include("crossover.jl")
 include("mutation.jl")
 include("../plotter/plots.jl")
+include("selection.jl")
+include("crossover.jl")
 
-HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_0.json")
+HCP_d = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/data/train_0.json")
 
-
-population = knn_initialize_population(HCP, 1, 0)
-
-
-update_population_fitness!(population, HCP)
-
-print_individual_routes(population.individuals[1])
-mutation_shift!(population.individuals[1], 1)
-println("--------------------")
-print_individual_routes(population.individuals[1])
-println("--------------------")
-println("--------------------")
-println("--------------------")
-println("--------------------")
-println("--------------------")
-function funz(population, HCP)
-    println("funz")
-    for i in 1:100
-        mutation_shift!(population.individuals[1], 1)
-        update_population_fitness!(population, HCP)
-    end
-    print_individual_routes(population.individuals[1])
-end
-#funz(population, HCP)
+#individuals = mixed_initialize_population(HCP_d,10, 10)
+pop = mixed_initialize_population(HCP_d,10, 10)
+#pop = Population(individuals, 10, individuals[1])
+println(pop.best_individual.fitness)
+update_population_fitness!(pop, HCP_d)
+println(pop.best_individual.fitness)
+print_individual_routes(pop.best_individual)
