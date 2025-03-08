@@ -84,72 +84,59 @@ end
 
 
 
-
-
-
-
-
-## DA CANC
-## SERVE PER CALCOLARE SOLO IL TEMPO DI VIAGGIO DI UNA SOLUZIONE
-
-function calculate_route_travel_time(route, travel_t_mtrx)
+function funz_print_all_info_route(route, travel_t_mtrx)
     nurse_capicity = route.nurse.capacity
     route.feasible = true
     curr_time = 0.0
     tot_travel_time = 0.0
+
+    if isempty(route.patients)
+        route.time_windows_respected = true
+        route.capacity_respected = true
+        route.is_back_before_return_time = true
+        return tot_travel_time
+    end
     if !isempty(route.patients)
+        print("D(0) -> ")
         # Tempo necessario dal deposito a cura del primo paziente
         tot_travel_time, curr_time = travel_to_from_depot_time!(tot_travel_time, curr_time, route.patients[1], travel_t_mtrx)
         curr_time = wait_to_care_time!(curr_time, route.patients[1])
         route.time_windows_respected = is_in_care_time_window(route.patients[1], curr_time)
+        st_pc = curr_time
         curr_time, nurse_capicity = care_time!(curr_time, route.patients[1], nurse_capicity)
+        print("P:", route.patients[1].id, " (", round(st_pc, digits=2), "-", round(curr_time, digits=2), 
+        ") [", Int(route.patients[1].start_time), "-", Int(route.patients[1].end_time), "] ")
         if length(route.patients) > 1
             # Itera sulla lista di pazienti 
             for i in 2:length(route.patients) # paziente precedente: route.patients[i-1], paziente corrente: route.patients[i]
                 tot_travel_time, curr_time = travel_from_Pa_to_Pb!(tot_travel_time, curr_time, route.patients[i-1], route.patients[i], travel_t_mtrx)
+                pc = route.patients[i]
                 curr_time = wait_to_care_time!(curr_time, route.patients[i])
+                st_pc = curr_time
                 route.time_windows_respected = route.time_windows_respected && is_in_care_time_window(route.patients[i], curr_time)
                 curr_time, nurse_capicity = care_time!(curr_time, route.patients[i], nurse_capicity)
+                print("P:", pc.id, " (", round(st_pc, digits=0), "-", round(curr_time, digits=0), 
+                ") [", Int(pc.start_time), "-", Int(pc.end_time), "] ")
             end
         end
         # Tempo necessario dall'ultimo paziente al deposito
         tot_travel_time, curr_time = travel_to_from_depot_time!(tot_travel_time, curr_time, route.patients[end], travel_t_mtrx)
+        print("D(", round(tot_travel_time, digits=2), ")")
     end
     route.capacity_respected = (nurse_capicity >= 0)
     route.is_back_before_return_time = is_back_before_return_time(curr_time, route.depot_return_time)
-    if !(route.time_windows_respected && route.capacity_respected && route.is_back_before_return_time)
-        route.feasible = false
-    end
-    return tot_travel_time , route.nurse.capacity - nurse_capicity
+    println("Route duration: ", tot_travel_time)
+    println("Nurse capacity:", route.nurse.capacity - nurse_capicity)
+    return tot_travel_time
 end
 
-function show_solution(individual::Individual, problem::HomeCareRoutingProblem)
-    println("Soluzione trovata:")
-    for (i, route) in enumerate(individual.routes)
-        tot_travel_time, cover_demand = calculate_route_travel_time(route, problem.travel_times)
-        patient_ids = [p.id for p in route.patients]
-        
-        println("-----------------------------")
-        println("Nurse ", i, ":")
-        println("  - Route duration: ", tot_travel_time)
-        println("  - Cover demand: ", cover_demand)
-        println("  - Patients: ", patient_ids)
-        println("  - Fattibile: ", route.feasible ? "Sì" : "No")
-    end
-end
-function save_show_solution(individual::Individual, problem::HomeCareRoutingProblem)
-    filename = "save_sol"
-    open(filename, "a") do io
-        
-    for (i, route) in enumerate(individual.routes)
-        tot_travel_time, cover_demand = calculate_route_travel_time(route, problem.travel_times)
-        patient_ids = [p.id for p in route.patients]
-
-            println(io, "Route Index: $i")
-            println(io, "  Duration: $tot_travel_time")
-            println(io, "  Covered Demand: $cover_demand")
-            println(io, "  Patients: $patient_ids")
-            println(io)  # Riga vuota per separare le rotte
+function funz_print_all_info_ind(population::Population, problem::HomeCareRoutingProblem)
+    travel_times = problem.travel_times
+    for individual in population.individuals
+        individual.fitness = sum(funz_print_all_info_route(route, travel_times) for route in individual.routes)
+        individual.feasible = all(r -> r.feasible, individual.routes) # controlla se tutte le rotte sono fattibili
+        if individual.fitness < population.best_individual.fitness # aggiorna se minore
+            population.best_individual = deepcopy(individual)
         end
     end
 end
