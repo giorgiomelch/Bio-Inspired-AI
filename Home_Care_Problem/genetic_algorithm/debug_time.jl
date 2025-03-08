@@ -30,13 +30,13 @@ function init_pop_cheat(i_t, i)
     individuals = Vector{Individual}()
     individual = initialize_individual_from_ids(i_t, HCP_d.patients, HCP_d.nbr_nurses, HCP_d.depot.return_time, HCP_d.nurse.capacity)
     individual.fitness = sum(calculate_route_time(route, HCP_d.travel_times) for route in individual.routes)
-    for _ in 1:100
+    for _ in 1:1
         push!(individuals, individual)
     end
-    a= Population(individuals, 100, individual)
+    a= Population(individuals, 1, individual)
     update_population_fitness!(a, HCP_d)
-    show_solution(a.individuals[1], HCP_d)
-    plot_routes(HCP_d.depot, a.best_individual.routes)
+    #plot_routes(HCP_d.depot, a.best_individual.routes)
+    funz_print_all_info_ind(a, HCP_d)
     return a
 end
 
@@ -67,21 +67,59 @@ Vector{Int64}(),
 Vector{Int64}(),
 Vector{Int64}()])
     
-i_t1 = Vector{Vector{Int64}}([[92, 62, 30, 28, 32, 50, 80],[33, 26, 27, 29, 31, 34, 94, 93, 96],[42, 39, 36, 38, 40, 41, 43, 35, 37],
-    [2, 45, 5, 1, 3, 8, 46, 55],[82, 11, 9, 97, 75, 58],Vector{Int64}(),[88, 79, 6, 7, 4, 70, 100],
-    [72, 44, 61, 68],[65, 64, 83, 99, 57, 66],[71, 67, 84, 51, 56, 91],[12, 14, 47, 15, 16, 10, 13, 17],
-    Vector{Int64}(), Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),[21, 19, 23, 18, 22, 49, 20, 25, 24],
-    Vector{Int64}(), [69, 78, 73, 60],Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),[90, 53, 98],Vector{Int64}(),[52, 86, 87, 59, 74],    [95, 85, 63, 76, 89, 48, 77]])
+i_t1 = Vector{Vector{Int64}}([[2, 45, 3, 5, 8, 6, 7, 46, 4, 1, 100],
+[85, 63, 51, 84, 56, 66],
+[82, 12, 14, 11, 9, 10, 13, 17],
+[69, 53, 98],
+[29, 27, 26, 30, 28, 32, 31, 34, 50, 80],
+[33, 76, 89, 48, 21, 25, 24],
+[39, 36, 40, 37, 35, 43, 70],
+[90],
+[64, 99, 57, 59, 74, 58],
+[65, 52, 86, 87, 97, 75, 77],
+[42, 44, 38, 41, 72, 54],
+[15, 16, 47, 78, 55],
+[],
+[],
+[],
+[],
+[92, 95, 62, 67, 71, 94, 93, 96],
+[81, 61, 68],
+[],
+[],
+[88, 79, 73, 60],
+[83, 19, 23, 18, 22, 49, 20, 91],
+[],
+[],
+[]])
     
-i_t2=Vector{Vector{Int64}}([[95, 92, 59, 5, 45, 82, 7, 48, 47, 36, 49, 46, 8, 84, 83, 18, 6, 96, 94, 13, 58],Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),
-[2, 57, 15, 42, 44, 38, 86, 16, 61, 85, 99, 98, 37, 87, 97, 43, 14, 100, 91, 93, 17, 60, 89],
-[27, 69, 1, 30, 51, 33, 81, 65, 71, 9, 34, 78, 79, 29, 68, 3, 77, 50],Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),
-[21, 73, 72, 75, 23, 67, 39, 41, 22, 74, 56, 4, 55, 25, 54, 24, 80, 26],Vector{Int64}(),
-[52, 88, 62, 19, 11, 64, 63, 90, 32, 66, 35, 20, 10, 70, 31],Vector{Int64}(),
-[28, 76, 12, 40, 53],Vector{Int64}(),
-Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),Vector{Int64}(),Vector{Int64}()])
+i_t2=Vector{Vector{Int64}}([[52, 18, 45, 46, 8, 83, 60, 5, 84, 17, 91, 85, 98, 100, 37, 93, 96, 89],
+[],
+[],
+[],
+[],
+[],
+[95, 92, 42, 15, 14, 38, 86, 44, 16, 61, 99, 59, 87, 2, 57, 43, 97, 94, 6, 13, 58],
+[],
+[21, 73, 72, 39, 67, 23, 56, 75, 22, 41, 74, 4, 55, 25, 24, 54, 26],
+[],
+[],
+[],
+[],
+[],
+[],
+[],
+[],
+[],
+[27, 31, 88, 62, 11, 64, 36, 49, 19, 47, 48, 82, 7, 10, 63, 90, 32, 66, 20, 70],
+[69, 1, 30, 51, 33, 71, 65, 9, 81, 79, 29, 78, 35, 34, 3, 68, 80, 77, 50],
+[],
+[],
+[],
+[],
+[28, 76, 12, 40, 53]])
 
-a = init_pop_cheat(i_t1, 1)
+a = init_pop_cheat(i_t0, 0)
 println(a.individuals[1].fitness)
 println(a.individuals[1].feasible)
 
