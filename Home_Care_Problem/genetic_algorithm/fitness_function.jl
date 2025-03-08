@@ -132,11 +132,10 @@ end
 
 function funz_print_all_info_ind(population::Population, problem::HomeCareRoutingProblem)
     travel_times = problem.travel_times
-    for individual in population.individuals
-        individual.fitness = sum(funz_print_all_info_route(route, travel_times) for route in individual.routes)
-        individual.feasible = all(r -> r.feasible, individual.routes) # controlla se tutte le rotte sono fattibili
-        if individual.fitness < population.best_individual.fitness # aggiorna se minore
-            population.best_individual = deepcopy(individual)
-        end
+    individual = population.best_individual
+    individual.fitness = sum(funz_print_all_info_route(route, travel_times) for route in individual.routes)
+    individual.feasible = all(r -> r.feasible, individual.routes) # controlla se tutte le rotte sono fattibili
+    if individual.fitness < population.best_individual.fitness # aggiorna se minore
+        population.best_individual = deepcopy(individual)
     end
 end
