@@ -1,10 +1,10 @@
 Problem Number, Route, Patient IDs, Fitness, Feasible
 ------------------------------------
-1514
-1590 5% forse 1598
+1514    1560
+1590 5%
 1665 10%
 1817 20%
-1968 30% 2307
+1968 30% 
 
 --- New Solution ---
 Int64[],
