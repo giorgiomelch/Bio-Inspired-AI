@@ -26,7 +26,7 @@ N_INVERSION = 0
 N_SHIFT = 0
 PERC_SPLIT_MUTATION = 0.0
 
-for data_train_nbr in 1:2
+for data_train_nbr in 0:2
         HCP = load_home_care_problem("/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/test/test_"* string(data_train_nbr) *".json")
         
         @time best_individual = genetic_algorithm(HCP, N_POP, 
@@ -38,6 +38,4 @@ for data_train_nbr in 1:2
         println("Best fitness: ", best_individual.fitness, ", feasible: ", best_individual.feasible, "\nis_back_before_return_time: ", all(r -> r.is_back_before_return_time, best_individual.routes), "\ncapacity_respected: ", all(r -> r.capacity_respected, best_individual.routes), "\ntime_windows_respected: ", all(r -> r.time_windows_respected, best_individual.routes))
         println("\nBenchmark: ", HCP.benchmark)
         save_individual_routes(best_individual, "./solution_"*string(data_train_nbr)*".txt", "/home/giorgiomelch/BI_AI/workspace/genetic-algorithm/Home_Care_Problem/TEST_solutions")
-        show_solution(best_individual, HCP)
-        save_show_solution(best_individual, HCP)
 end
