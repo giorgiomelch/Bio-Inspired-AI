@@ -34,5 +34,3 @@ function simple_genetic_algorithm(X, y, POPULATION_SIZE, N_ITERATIONS, MUTATION_
     end
     return best_individual, best_fitness
 end
-
-simple_genetic_algorithm(15, 10, 11, 0.8)
