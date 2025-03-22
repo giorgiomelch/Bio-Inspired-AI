@@ -10,8 +10,7 @@ end
 
 function random_forest(features_used, X, y)
     X = X[:, features_used .== 1]  # Seleziona le colonne per cui feature_used è 1
-    # Divisione del dataset in training (80%) e test (20%)
-    Random.seed!(42)
+    Random.seed!(42) # Divisione del dataset in training (80%) e test (20%)
     train_idx = randperm(size(X, 1))[1:round(Int, 0.8 * size(X, 1))]
     test_idx = setdiff(1:size(X, 1), train_idx)
     X_train, X_test = X[train_idx, :], X[test_idx, :]
@@ -25,7 +24,6 @@ function random_forest(features_used, X, y)
     end
     y_pred = predict(model, X_test)
     accuracy = mean(y_pred .== y_test)
-    println("Accuratezza del modello Random Forest: ", accuracy)
     return accuracy
 end
 
@@ -37,8 +35,10 @@ function fitness_function(X, y, features_used, lookup_table)
     lookup_table_index_features_used = features_to_index(features_used)
     if lookup_table[lookup_table_index_features_used] != -1.0
         accuracy = lookup_table[lookup_table_index_features_used]
+        println("Accuratezza da lookup_table: ", accuracy)
     else
         accuracy = random_forest(features_used, X, y)
+        println("Accuratezza del modello Random Forest: ", accuracy)
         lookup_table[lookup_table_index_features_used] = accuracy 
     end
     penalty_weight = 0.1
