@@ -5,10 +5,10 @@ include("_crossover.jl")
 include("_mutation.jl")
 
 
-function simple_genetic_algorithm(X, y, POPULATION_SIZE, N_ITERATIONS, MUTATION_RATE)
+function simple_genetic_algorithm(X, y, lookup_table, POPULATION_SIZE, N_ITERATIONS, MUTATION_RATE)
     N_GENES = size(X, 2)
     population = initialize_random_population(POPULATION_SIZE, N_GENES)
-    fitness = calculate_population_fitness(X, y, population)
+    fitness = calculate_population_fitness(X, y, population, lookup_table)
     best_individual = population[argmax(fitness), :]
     best_fitness = maximum(fitness)
     for i in 1:N_ITERATIONS
@@ -20,7 +20,7 @@ function simple_genetic_algorithm(X, y, POPULATION_SIZE, N_ITERATIONS, MUTATION_
         # MUTATION
         mutation_bit_flip!(population, MUTATION_RATE)
         # EVALUATE FITNESS
-        fitness = calculate_population_fitness(X, y, population)
+        fitness = calculate_population_fitness(X, y, population, lookup_table)
         if maximum(fitness) > best_fitness
             best_individual = population[argmax(fitness), :]
             best_fitness = maximum(fitness)
