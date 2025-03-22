@@ -22,5 +22,14 @@ function save_lookup_table(lookup_table::Vector{Float64}, filename::String)
 end
 
 function load_lookup_table(filename::String)
-    return deserialize(filename)
+    filepath = joinpath(@__DIR__, "lookup_tables", filename)
+    return deserialize(filepath)
+end
+using Serialization
+
+function save_lookup_table(lookup_table::Vector{Float64}, filename::String)
+    save_dir = joinpath(@__DIR__, "lookup_tables")
+    filepath = joinpath(save_dir, filename)
+    serialize(filepath, lookup_table)
+    println("Lookup table salvata in: ", filepath)
 end
