@@ -26,11 +26,7 @@ function simple_genetic_algorithm(X, y, lookup_table, POPULATION_SIZE, N_ITERATI
             best_fitness = maximum(fitness)
         end
         # SURVIVOR SELECTION
-        println("POP N1", size(population))
         population, fitness = elitism(population, fitness, POPULATION_SIZE)
-        println("POP N2", size(population))
-        
-        println(population)
     end
     return best_individual, best_fitness
 end
