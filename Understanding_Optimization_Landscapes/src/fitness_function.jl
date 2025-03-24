@@ -46,7 +46,6 @@ function fitness_function(X, y, features_used, lookup_table)
 end
 
 function calculate_population_fitness(X, y, population, lookup_table)
-    println("POP: ", typeof(population), " ", size(population), size(population)[1])
     POPULATION_SIZE = size(population)[1]
     fitness = zeros(POPULATION_SIZE)
     @threads for i in 1:POPULATION_SIZE -1
