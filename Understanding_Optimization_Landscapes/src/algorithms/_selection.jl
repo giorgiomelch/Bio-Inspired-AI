@@ -16,3 +16,137 @@ function elitism(population, fitness, number_of_survivors)
     best_indices = sortperm(fitness, rev=true)[1:number_of_survivors]
     return population[best_indices, :], fitness[best_indices]
 end
+                            ############
+                            ## NSGA2 ##
+                            ############
+
+# verify if p dominates q maximizing the accuracy and minimizing the number of features used
+function dominates(p::Int, q::Int, fitness::Vector{Float64}, n_feature_used::Vector{Int})
+    return (fitness[p] ≥ fitness[q] && n_feature_used[p] ≤ n_feature_used[q]) &&
+           ((fitness[p] > fitness[q]) || (n_feature_used[p] < n_feature_used[q]))
+end
+
+# Restituisce una lista di front, ognuno contenente gli indici degli individui.
+function non_dominated_sort(fitness::Vector{Float64}, n_feature_used::Vector{Int})
+    N = length(fitness)
+    S = [Int[] for _ in 1:N]            # Per ciascun individuo, la lista degli indici che esso domina
+    domination_count = zeros(Int, N)    # Numero di individui che dominano ciascun individuo
+    fronts = Vector{Vector{Int}}()      # Lista dei front
+
+    # Calcolo di S e domination_count
+    for p in 1:N
+        for q in 1:N
+            if p == q
+                continue
+            end
+            if dominates(p, q, fitness, n_feature_used)
+                push!(S[p], q)
+            elseif dominates(q, p, fitness, n_feature_used)
+                domination_count[p] += 1
+            end
+        end
+    end
+
+    # Primo fronte: individui non dominati (domination_count == 0)
+    front1 = [p for p in 1:N if domination_count[p] == 0]
+    push!(fronts, front1)
+
+    # Costruzione degli altri front
+    i = 1
+    while !isempty(fronts[i])
+        next_front = Int[]
+        for p in fronts[i]
+            for q in S[p]
+                domination_count[q] -= 1
+                if domination_count[q] == 0
+                    push!(next_front, q)
+                end
+            end
+        end
+        push!(fronts, next_front)
+        i += 1
+    end
+
+    # Rimuove l'ultimo fronte vuoto
+    pop!(fronts)
+    return fronts
+end
+
+# Funzione per calcolare la crowding distance di un fronte.
+function crowding_distance(front::Vector{Int}, fitness::Vector{Float64}, n_feature_used::Vector{Int})
+    distances = Dict{Int, Float64}()
+    for i in front
+        distances[i] = 0.0
+    end
+
+    objectives = [:fitness, :n_feature_used]
+    for obj in objectives
+        # Ordina il fronte in base al valore dell'obiettivo corrente
+        sorted_indices = sort(front, by = i -> obj == :fitness ? fitness[i] : n_feature_used[i])
+        distances[sorted_indices[1]] = Inf
+        distances[sorted_indices[end]] = Inf
+
+        # Calcola il range per normalizzare i valori
+        if obj == :fitness
+            min_val = fitness[sorted_indices[1]]
+            max_val = fitness[sorted_indices[end]]
+        else
+            min_val = n_feature_used[sorted_indices[1]]
+            max_val = n_feature_used[sorted_indices[end]]
+        end
+        range_val = max_val - min_val
+        if range_val == 0
+            range_val = 1  # Evita divisione per zero
+        end
+
+        # Calcola la distanza per i restanti individui
+        for j in 2:(length(sorted_indices)-1)
+            i_index = sorted_indices[j]
+            if obj == :fitness
+                diff = fitness[sorted_indices[j+1]] - fitness[sorted_indices[j-1]]
+            else
+                diff = n_feature_used[sorted_indices[j-1]] - n_feature_used[sorted_indices[j+1]]
+            end
+            distances[i_index] += diff / range_val
+        end
+    end
+
+    # Ritorna le distanze rispettando l'ordine originale del fronte
+    return [distances[i] for i in front]
+end
+
+# Funzione principale di selezione dei sopravvissuti con NSGA-II.
+# Qui population è una matrice, con righe come individui e colonne come features.
+function nsga_selection(population, fitness::Vector{Float64}, n_feature_used::Vector{Int}, POPULATION_SIZE::Int)
+    # Ottieni il numero di individui dalla prima dimensione della matrice
+    N = size(population, 1)
+
+    # Esegui il non-dominated sorting sui due obiettivi
+    fronts = non_dominated_sort(fitness, n_feature_used)
+
+    survivors = Int[]  # Lista degli indici degli individui selezionati
+    for front in fronts
+        # Se aggiungendo l'intero fronte non si supera la dimensione desiderata
+        if length(survivors) + length(front) ≤ POPULATION_SIZE
+            append!(survivors, front)
+        else
+            # Calcola la crowding distance per il fronte corrente
+            cd = crowding_distance(front, fitness, n_feature_used)
+            # Associa ciascun individuo alla propria crowding distance
+            front_cd = zip(front, cd)
+            # Ordina il fronte in base alla crowding distance in ordine decrescente (priorità a quelli più distanti)
+            sorted_front = sort(collect(front_cd), by = x -> x[2], rev = true)
+            # Seleziona quanti individui servono per raggiungere POPULATION_SIZE
+            remaining = POPULATION_SIZE - length(survivors)
+            selected = [x[1] for x in sorted_front[1:remaining]]
+            append!(survivors, selected)
+            break  # Popolazione completata
+        end
+    end
+
+    # Ritorna la nuova popolazione (righe selezionate) e i relativi obiettivi
+    new_population = population[survivors, :]
+    new_fitness = fitness[survivors]
+    new_n_feature_used = n_feature_used[survivors]
+    return new_population, new_fitness, new_n_feature_used
+end
