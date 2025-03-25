@@ -21,36 +21,27 @@ function random_forest(features_used, X, y)
     fit!(model, X_train, y_train)
     if all(x -> x == 0, X)
         println("Il vettore X è composto solo da zeri")
+        return -1.0
     end
     y_pred = predict(model, X_test)
     accuracy = mean(y_pred .== y_test)
     return accuracy
 end
 
-function penalty_number_of_features_used(features_used)
-    return 0
+function fitness_function(features_used, lookup_table)
+    lookup_table_index = features_to_index(features_used)
+    accuracy = lookup_table[lookup_table_index]
+    error = 1 - accuracy
+    penalty_weight = 0.05
+    return error + penalty_weight * sum(features_used)
 end
 
-function fitness_function(X, y, features_used, lookup_table)
-    lookup_table_index_features_used = features_to_index(features_used)
-    if lookup_table[lookup_table_index_features_used] != -1.0
-        accuracy = lookup_table[lookup_table_index_features_used]
-        println("Accuratezza da lookup_table: ", accuracy)
-    else
-        accuracy = random_forest(features_used, X, y)
-        println("Accuratezza del modello Random Forest: ", accuracy)
-        lookup_table[lookup_table_index_features_used] = accuracy 
-    end
-    penalty_weight = 0.1
-    return accuracy + penalty_weight * penalty_number_of_features_used(features_used)
-end
-
-function calculate_population_fitness(X, y, population, lookup_table)
+function calculate_population_fitness(population, lookup_table)
     POPULATION_SIZE = size(population)[1]
     fitness = zeros(POPULATION_SIZE)
     @threads for i in 1:POPULATION_SIZE -1
         #println("Thread ", threadid(), " is processing individual ", i)
-        fitness[i] = fitness_function(X, y, population[i,:], lookup_table)
+        fitness[i] = fitness_function(population[i,:], lookup_table)
     end
     return fitness
 end
