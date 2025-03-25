@@ -9,13 +9,14 @@ include("_mutation.jl")
 function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_ITERATIONS, MUTATION_RATE)
     mean_fitness = Float64[]
     minimum_fitness = Float64[]
+    humming_distance = Float64[]
     population = initialize_random_population(POPULATION_SIZE, N_FEATURES)
     fitness, accuracy = calculate_population_fitness(population, lookup_table)
     best_individual = population[argmin(fitness), :]
     best_fitness = minimum(fitness)
     for i in 1:N_ITERATIONS
         if i % 10 == 0 && i != 0
-            println("ITERATION N: ", i, " mean fitness: ", round(mean(fitness), digits=3), " minimum fitness: ", round(minimum(fitness), digits=3))
+            println("ITERATION N: ", i, " mean fitness: ", round(mean(fitness), digits=5), " minimum fitness: ", round(minimum(fitness), digits=3))
         end
         # PARENT SELECTION FOR CROSSOVER
         parents = tournament_selection(population, fitness, POPULATION_SIZE, 2)
@@ -34,7 +35,9 @@ function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_I
         population, fitness = elitism(population, fitness, POPULATION_SIZE)
         push!(mean_fitness, mean(fitness))
         push!(minimum_fitness, minimum(fitness))
+        push!(humming_distance, average_hamming_distance(population))
     end
+    plot_humming_distance_evolution(humming_distance)
     plot_fitness_evolution(mean_fitness, minimum_fitness)
     return best_fitness, best_individual
 end
