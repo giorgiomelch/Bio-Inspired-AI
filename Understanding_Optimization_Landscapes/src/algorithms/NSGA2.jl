@@ -6,42 +6,40 @@ include("_crossover.jl")
 include("_mutation.jl")
 
 function calculate_n_feature_used(population)
-    number_of_individuals, _ = size(population)
-    n_feature_used = zeros(Int64, number_of_individuals)
-    for i in 1:number_of_individuals
-        n_feature_used[i] = sum(population[i, :])
-    end
-    return n_feature_used
+    n_features = sum(population, dims=2)
+    return vec(n_features)
 end
 
-function NSGA2(X, y, lookup_table, POPULATION_SIZE, N_ITERATIONS, MUTATION_RATE)
-    N_GENES = size(X, 2)
-    population = initialize_random_population(POPULATION_SIZE, N_GENES)
-    fitness = calculate_population_fitness(X, y, population, lookup_table)
-    best_individual = population[argmax(fitness), :]
-    best_fitness = maximum(fitness)
+function NSGA2(lookup_table, N_FEATURES, POPULATION_SIZE, N_ITERATIONS, MUTATION_RATE)
+    mean_fitness = Float64[]
+    minimum_fitness = Float64[]
+    population = initialize_random_population(POPULATION_SIZE, N_FEATURES)
+    fitness = calculate_population_fitness(population, lookup_table)
+    best_individual = population[argmin(fitness), :]
+    best_fitness = minimum(fitness)
     for i in 1:N_ITERATIONS
-        println(size(population))
-        println("Iterazione: ", i, " - Fitness migliore: ", best_fitness)
         # PARENT SELECTION FOR CROSSOVER
-        parents = tournament_selection(population, fitness, POPULATION_SIZE, 3)
+        parents = tournament_selection(population, fitness, POPULATION_SIZE, 2)
         # CROSSOVER
         offsprings = two_point_crossover(parents)
         # MUTATION
         mutation_bit_flip!(offsprings, MUTATION_RATE)
         population = vcat(population, offsprings)
         # EVALUATE FITNESS
-        accuracy = calculate_population_fitness(X, y, population, lookup_table)
-
-        if maximum(accuracy) > best_fitness
-            best_individual = population[argmax(accuracy), :]
-            best_fitness = maximum(accuracy)
+        fitness = calculate_population_fitness(population, lookup_table)
+        if minimum(fitness) < best_fitness
+            best_individual = population[argmin(fitness), :]
+            best_fitness = minimum(fitness)
         end
         n_feature_used = calculate_n_feature_used(population)
         # SURVIVOR SELECTION
-        plot_NSGA2_population(accuracy, n_feature_used)
-        population, accuracy = nsga_selection(population, accuracy, n_feature_used, POPULATION_SIZE)
-        plot_NSGA2_population(accuracy, n_feature_used)
+        plot_NSGA2_population(fitness, n_feature_used)
+        population, fitness = nsga_selection(population, fitness, n_feature_used, POPULATION_SIZE)
+        n_feature_used = calculate_n_feature_used(population)
+        plot_NSGA2_population(fitness, n_feature_used)
+        push!(mean_fitness, mean(fitness))
+        push!(minimum_fitness, minimum(fitness))
     end
+    plot_fitness_evolution(mean_fitness, minimum_fitness)
     return best_individual, best_fitness
 end
