@@ -10,12 +10,14 @@ function plot_fitness_evolution(mean_fitness::Vector{Float64}, max_fitness::Vect
 end
 
 function plot_NSGA2_population(fitness::Vector{Float64}, n_feature_used::Vector{Int})
-    scatter(n_feature_used, fitness, 
+    p = plot(n_feature_used, fitness, seriestype=:scatter, 
         xlabel="Numero di Feature Usate", 
-        ylabel="Fitness (Accuratezza)",
-        title="Distribuzione della Popolazione",
+        ylabel="Fitness (Accuratezza)", 
+        title="Distribuzione della Popolazione", 
         legend=false, 
-        markersize=5,
-        markercolor=:blue,
-        grid=true)
+        markersize=5, 
+        markercolor=:blue, 
+        grid=true,
+        ylim=(0, 1))
+    display(p)
 end
