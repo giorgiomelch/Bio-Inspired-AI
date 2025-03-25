@@ -1,11 +1,11 @@
 using DecisionTree, Base.Threads
 
 function features_to_index(features_used::Vector{Int})
-    idx = 1 # in julia gli array partono da indice 1
-    for (i, bit) in enumerate(features_used)
-        idx += bit * 2^(i-1)
+    index = 0
+    for (i, bit) in enumerate(reverse(features_used))
+        index += bit * 2^(i-1)
     end
-    return idx
+    return index
 end
 
 function random_forest(features_used, X, y)
