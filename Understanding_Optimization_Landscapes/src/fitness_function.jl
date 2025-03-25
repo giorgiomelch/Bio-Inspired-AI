@@ -29,19 +29,23 @@ function random_forest(features_used, X, y)
 end
 
 function fitness_function(features_used, lookup_table)
+    if all(x -> x == 0, features_used)
+        return +Inf, 0.0
+    end
     lookup_table_index = features_to_index(features_used)
     accuracy = lookup_table[lookup_table_index]
     error = 1 - accuracy
-    penalty_weight = 0.05
-    return error + penalty_weight * sum(features_used)
+    penalty_weight = 0.0
+    fitness = error + penalty_weight * sum(features_used)
+    return fitness, accuracy
 end
 
 function calculate_population_fitness(population, lookup_table)
     POPULATION_SIZE = size(population)[1]
     fitness = zeros(POPULATION_SIZE)
-    @threads for i in 1:POPULATION_SIZE -1
-        #println("Thread ", threadid(), " is processing individual ", i)
-        fitness[i] = fitness_function(population[i,:], lookup_table)
+    accuracy = zeros(POPULATION_SIZE)
+    for i in 1:POPULATION_SIZE
+        fitness[i], accuracy[i] = fitness_function(population[i,:], lookup_table)
     end
-    return fitness
+    return fitness, accuracy
 end
