@@ -30,7 +30,7 @@ end
 
 function fitness_function(features_used, lookup_table)
     if all(x -> x == 0, features_used)
-        return +Inf, 0.0
+        return +1.0, 0.0
     end
     lookup_table_index = features_to_index(features_used)
     accuracy = lookup_table[lookup_table_index]
