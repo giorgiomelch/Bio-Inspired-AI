@@ -3,7 +3,7 @@ function tournament_selection(population, fitness, number_of_survivors, tourname
     for i in 1:number_of_survivors
         # Select a random subset from the population
         candidates = randperm(length(fitness))[1:tournament_size]
-        # Find the individual with the maximum fitness among the candidates
+        # Find the individual with the minimum fitness among the candidates
         best_index = argmin(fitness[candidates])
         survivors_index[i] = candidates[best_index]
     end
@@ -13,9 +13,10 @@ end
 
 
 function elitism(population, fitness, number_of_survivors)
-    best_indices = sortperm(fitness, rev=true)[1:number_of_survivors]
+    best_indices = sortperm(fitness, rev=false)[1:number_of_survivors]
     return population[best_indices, :], fitness[best_indices]
 end
+
                             ############
                             ## NSGA2 ##
                             ############
@@ -115,8 +116,6 @@ function crowding_distance(front::Vector{Int}, fitness::Vector{Float64}, n_featu
     return [distances[i] for i in front]
 end
 
-# Funzione principale di selezione dei sopravvissuti con NSGA-II.
-# Qui population è una matrice, con righe come individui e colonne come features.
 function nsga_selection(population, fitness::Vector{Float64}, n_feature_used::Vector{Int}, POPULATION_SIZE::Int)
     # Ottieni il numero di individui dalla prima dimensione della matrice
     N = size(population, 1)
