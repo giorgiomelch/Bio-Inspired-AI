@@ -1,5 +1,6 @@
 include("../fitness_function.jl")
 include("../plotter.jl")
+include("_distance.jl")
 include("_initialization.jl")
 include("_selection.jl")
 include("_crossover.jl")
@@ -10,8 +11,8 @@ function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_I
     minimum_fitness = Float64[]
     population = initialize_random_population(POPULATION_SIZE, N_FEATURES)
     fitness, accuracy = calculate_population_fitness(population, lookup_table)
-    best_individual = population[argmax(fitness), :]
-    best_fitness = maximum(fitness)
+    best_individual = population[argmin(fitness), :]
+    best_fitness = minimum(fitness)
     for i in 1:N_ITERATIONS
         if i % 10 == 0 && i != 0
             println("ITERATION N: ", i, " mean fitness: ", round(mean(fitness), digits=3), " minimum fitness: ", round(minimum(fitness), digits=3))
