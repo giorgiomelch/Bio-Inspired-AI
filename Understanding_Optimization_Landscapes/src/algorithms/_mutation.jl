@@ -8,6 +8,3 @@ function mutation_bit_flip!(population, bit_flip_probability)
         end
     end
 end
-        end
-    end
-end
