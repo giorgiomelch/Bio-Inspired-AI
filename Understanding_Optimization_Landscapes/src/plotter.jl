@@ -26,6 +26,23 @@ function plot_NSGA2_population(errors::Vector{Float64}, n_feature_used::Vector{I
         markersize=5, 
         markercolor=:blue, 
         grid=true,
+        xlim=(0, 16),
         ylim=(0, 1))
     display(p)
+end
+
+function plot_pareto_evolution(survivors_per_iteration)
+    plot()
+    colors = palette(:heat, length(survivors_per_iteration))
+
+    for (i, (fitness, features)) in enumerate(survivors_per_iteration)
+        label = (i % 10 == 0) ? "Gen $i" : ""  
+        scatter!(features, fitness, label=label, color=colors[i], markersize=3, alpha=0.6)
+    end
+    xlabel!("Number of features used")
+    ylabel!("Error")
+    xlims!(0, 16)
+    ylims!(0, 1)
+    title!("Population Evolution over time")
+    display(plot!())
 end
