@@ -15,16 +15,15 @@ function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_I
     best_individual = population[argmin(fitness), :]
     best_fitness = minimum(fitness)
     for i in 1:N_ITERATIONS
-        if i % 10 == 0 && i != 0
-            println("ITERATION N: ", i, " mean fitness: ", round(mean(fitness), digits=5), " minimum fitness: ", round(minimum(fitness), digits=3))
-        end
+        println("ITERATION N: ", i, " mean fitness: ", round(mean(fitness), digits=5), " minimum fitness: ", round(minimum(fitness), digits=3))
         # PARENT SELECTION FOR CROSSOVER
-        parents = tournament_selection(population, fitness, POPULATION_SIZE, 2)
+        parents = tournament_selection(population, fitness, POPULATION_SIZE, 3)
         # CROSSOVER
         offsprings = two_point_crossover(parents)
         # MUTATION
         mutation_bit_flip!(offsprings, MUTATION_RATE)
-        population = vcat(population, offsprings)
+        #population = vcat(population, offsprings)
+        population = offsprings
         # EVALUATE FITNESS
         fitness, accuracy = calculate_population_fitness(population, lookup_table)
         if minimum(fitness) < best_fitness
@@ -32,7 +31,7 @@ function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_I
             best_fitness = minimum(fitness)
         end
         # SURVIVOR SELECTION
-        population, fitness = elitism(population, fitness, POPULATION_SIZE)
+        #population, fitness = elitism(population, fitness, POPULATION_SIZE)
         push!(mean_fitness, mean(fitness))
         push!(minimum_fitness, minimum(fitness))
         push!(humming_distance, average_hamming_distance(population))
