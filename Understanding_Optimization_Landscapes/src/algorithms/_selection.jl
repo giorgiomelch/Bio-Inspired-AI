@@ -21,14 +21,14 @@ end
                             ## NSGA2 ##
                             ############
 
-function dominates(p::Int, q::Int, fitness::Vector{Float64}, n_feature_used::Vector{Int})
-    le = (fitness[p] <= fitness[q]) && (n_feature_used[p] <= n_feature_used[q])
-    lt = (fitness[p] < fitness[q]) || (n_feature_used[p] < n_feature_used[q])
+function dominates(p::Int, q::Int, errors::Vector{Float64}, n_feature_used::Vector{Int})
+    le = (errors[p] <= errors[q]) && (n_feature_used[p] <= n_feature_used[q])
+    lt = (errors[p] < errors[q]) || (n_feature_used[p] < n_feature_used[q])
     return le && lt
 end
                             
-function non_dominated_sort(fitness::Vector{Float64}, n_feature_used::Vector{Int})
-    N = length(fitness)
+function non_dominated_sort(errors::Vector{Float64}, n_feature_used::Vector{Int})
+    N = length(errors)
     S = [Int[] for _ in 1:N]            # Per ciascun individuo, la lista degli indici che esso domina
     domination_count = zeros(Int, N)    # Numero di individui che dominano ciascun individuo
     fronts = Vector{Vector{Int}}()      # Lista dei front
@@ -39,9 +39,9 @@ function non_dominated_sort(fitness::Vector{Float64}, n_feature_used::Vector{Int
             if p == q
                 continue
             end
-            if dominates(p, q, fitness, n_feature_used)
+            if dominates(p, q, errors, n_feature_used)
                 push!(S[p], q)
-            elseif dominates(q, p, fitness, n_feature_used)
+            elseif dominates(q, p, errors, n_feature_used)
                 domination_count[p] += 1
             end
         end
@@ -70,8 +70,7 @@ function non_dominated_sort(fitness::Vector{Float64}, n_feature_used::Vector{Int
     return fronts
 end
 
-# Funzione per calcolare la crowding distance di un fronte.
-function crowding_distance(front::Vector{Int}, fitness_vector::Vector{Float64}, n_feature_used_vector::Vector{Int})
+function crowding_distance(front::Vector{Int}, errors::Vector{Float64}, n_feature_used_vector::Vector{Int})
     distances = Dict{Int, Float64}()
     for i in front
         distances[i] = 0.0
@@ -80,12 +79,12 @@ function crowding_distance(front::Vector{Int}, fitness_vector::Vector{Float64}, 
     objectives = [:fitness, :n_feature_used]
     for obj in objectives
         # Ordina il fronte in base al valore dell'obiettivo corrente
-        sorted_indices = sort(front, by = i -> obj == :fitness ? fitness_vector[i] : n_feature_used_vector[i])
+        sorted_indices = sort(front, by = i -> obj == :fitness ? errors[i] : n_feature_used_vector[i])
         distances[sorted_indices[1]] = Inf
         distances[sorted_indices[end]] = Inf
         if obj == :fitness
-            min_val = fitness_vector[sorted_indices[1]]
-            max_val = fitness_vector[sorted_indices[end]]
+            min_val = errors[sorted_indices[1]]
+            max_val = errors[sorted_indices[end]]
         else
             min_val = n_feature_used_vector[sorted_indices[1]]
             max_val = n_feature_used_vector[sorted_indices[end]]
@@ -98,7 +97,7 @@ function crowding_distance(front::Vector{Int}, fitness_vector::Vector{Float64}, 
         for j in 2:(length(sorted_indices)-1)
             i_index = sorted_indices[j]
             if obj == :fitness
-                diff = fitness_vector[sorted_indices[j+1]] - fitness_vector[sorted_indices[j-1]]
+                diff = errors[sorted_indices[j+1]] - errors[sorted_indices[j-1]]
             else
                 diff = n_feature_used_vector[sorted_indices[j-1]] - n_feature_used_vector[sorted_indices[j+1]]
             end
