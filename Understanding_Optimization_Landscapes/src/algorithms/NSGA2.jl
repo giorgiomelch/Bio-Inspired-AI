@@ -39,11 +39,10 @@ function NSGA2(lookup_table, N_FEATURES, POPULATION_SIZE, N_ITERATIONS, MUTATION
         push!(mean_fitness, mean(fitness))
         push!(minimum_fitness, minimum(fitness))
         push!(humming_distance, average_hamming_distance(population))
-        println("ITERATION N: ", i, ", mean fitness: ", round(mean(fitness), digits=3), ", minimum fitness: ", round(minimum(fitness), digits=3))
-        #plot_NSGA2_population(fitness, n_feature_used)
+        #println("ITERATION N: ", i, ", mean fitness: ", round(mean(fitness), digits=3), ", minimum fitness: ", round(minimum(fitness), digits=3))
     end
     plot_humming_distance_evolution(humming_distance)
     plot_pareto_evolution(survivors_per_iteration)
-    #plot_fitness_evolution(mean_fitness, minimum_fitness)
+    plot_fitness_evolution(mean_fitness, minimum_fitness)
     return best_fitness, best_individual
 end
