@@ -23,7 +23,7 @@ function random_forest(features_used, X, y)
         println("Il vettore X è composto solo da zeri")
         return -1.0
     end
-    y_pred = predict(model, X_test)
+    y_pred = DecisionTree.predict(model, X_test)
     accuracy = mean(y_pred .== y_test)
     return accuracy
 end
@@ -35,7 +35,7 @@ function fitness_function(features_used, lookup_table)
     lookup_table_index = features_to_index(features_used)
     accuracy = lookup_table[lookup_table_index]
     error = 1 - accuracy
-    penalty_weight = 0.0
+    penalty_weight = 0.05
     fitness = error + penalty_weight * sum(features_used)
     return fitness, accuracy
 end
