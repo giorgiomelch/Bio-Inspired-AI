@@ -53,10 +53,10 @@ function update_particle!(particle::Particle, global_best::Vector{Bool}, w::Floa
 end
 
 # Ciclo principale dell'algoritmo PSO
-function particle_swarm_optimization(num_particles::Int, dim::Int, max_iter::Int, w::Float64, c1::Float64, c2::Float64, lookup_table)
+function particle_swarm_optimization(lookup_table, dim::Int, num_particles::Int,  max_iter::Int, w::Float64, c1::Float64, c2::Float64, global_optimum)
     mean_fitness = Float64[]
     minimum_fitness = Float64[]
-    humming_distance = Float64[]
+    n_iteration_required_to_best_fiteness = +Inf
 
     particles = initialize_particles(num_particles, dim, lookup_table)
     
@@ -76,6 +76,7 @@ function particle_swarm_optimization(num_particles::Int, dim::Int, max_iter::Int
     
     # Ciclo delle iterazioni
     for iter in 1:max_iter
+        fitness_vector = Float64[]
         for particle in particles
             update_particle!(particle, global_best, w, c1, c2)
             fitness = evaluate_fitness(particle, lookup_table)
@@ -90,12 +91,16 @@ function particle_swarm_optimization(num_particles::Int, dim::Int, max_iter::Int
                 global_best_fitness = fitness
             end
 
-            push!(mean_fitness, mean(fitness))
-            push!(minimum_fitness, minimum(fitness))
+            push!(fitness_vector, fitness)
+            push!(fitness_vector, fitness)
         end
-        #println("Iteration $iter, best global fitness: $global_best_fitness")
+        push!(mean_fitness, mean(fitness_vector))
+        push!(minimum_fitness, minimum(fitness_vector))
+        if global_optimum == global_best_fitness && n_iteration_required_to_best_fiteness == +Inf
+            n_iteration_required_to_best_fiteness = iter
+        end
     end
     
     plot_fitness_evolution(mean_fitness, minimum_fitness)
-    return global_best, global_best_fitness
+    return global_best_fitness, Int.(global_best), n_iteration_required_to_best_fiteness
 end

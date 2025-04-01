@@ -6,12 +6,16 @@ include("./algorithms/Particle_Swarm_Optimization.jl")
 
 using CSV, DataFrames, Random, Statistics
 
-path1 = "winequality-white"
-path2 = "ObesityDataSet_raw_and_data_sinthetic"
-path3 = "magic04"
-# LOAD DATASET
-path = path2
-data_path = joinpath(@__DIR__, "..", "data", path * ".csv")
+# -------------------------------------------------------------------------
+# DATASET
+# -------------------------------------------------------------------------
+dataset_names = Dict(
+    "wine"    => "winequality-white",
+    "obesity" => "ObesityDataSet_raw_and_data_sinthetic",
+    "magic"   => "magic04"
+)
+selected_dataset = dataset_names["magic"]
+data_path = joinpath(@__DIR__, "..", "data", selected_dataset * ".csv")
 
 # LOAD DATASET
 df = CSV.read(data_path, DataFrame; header=true, delim=';')
@@ -19,25 +23,63 @@ X = Matrix(select(df, Not(last(names(df)))))
 y = df[!, last(names(df))]  
 number_of_features = size(X, 2)
 
-# CREATE LOOKUP TABLE - commented because it takes a lot of time
-#create_lookup_table(X, y, 16, "lookup_table_student_performance.jls")
+# -------------------------------------------------------------------------
+# LOOKUP TABLE
+# -------------------------------------------------------------------------
+# Commented because it takes a lot of time
+# CREATE LOOKUP TABLE
+#create_lookup_table(X, y, 16, "ObesityDataSet_raw_and_data_sinthetic.jls")
 #create_lookup_table(X, y, 11, "winequality-white.jls")
 #create_lookup_table(X, y, 10, "magic04.jls")
 # LOAD LOOKUP TABLE
-lookup_table = load_lookup_table(path * ".jls")
+lookup_table = load_lookup_table(selected_dataset * ".jls")
 
+# -------------------------------------------------------------------------
+# BENCHMARK TO REACH
+# -------------------------------------------------------------------------
 # SHOW THE BEST ACHIEVABLE ACCURACY 
-println("Best ACCURACY: ", maximum(lookup_table), ", Best features: ", reverse(digits(findall(x -> x == maximum(lookup_table), lookup_table)[1], base=2)))
+best_accuracy = maximum(lookup_table)
+best_idx = findall(x -> x == best_accuracy, lookup_table)[1]
+best_features_bin = reverse(digits(best_idx, base=2))
+println("Best ACCURACY: ", best_accuracy, ", Best features: ", best_features_bin)
 # SHOW THE BEST ACHIEVABLE FITNESS
 problem_best_fitness, problem_best_features = find_best_fitness(lookup_table, number_of_features)
 println("Best FITNESS: ", problem_best_fitness, ", with features: ", problem_best_features)
+println("--------------------------------------------------------------------------------------------\n")
 
 # RUN BIOLOGICAL ALGORITHMS
-best_fitness, best_individual = simple_genetic_algorithm(lookup_table, number_of_features, 20, 50, 0.8)
-println("SGA:   accuracy=",lookup_table[features_to_index(best_individual)], ", fitness=", best_fitness, ", features used=",best_individual)
+N_RUNS = 50
+N_POP = 20
+N_ITERATIONS = 25
 
-best_fitness, best_individual = NSGA2(lookup_table, number_of_features, 20, 50, 0.8)
-println("NSGA2: accuracy=",lookup_table[features_to_index(best_individual)], ", fitness=", best_fitness, ", features used=",best_individual)
+function run_algorithm(algorithm_function::Function, algorithm_name::String, lookup_table, num_features, N_POP, N_ITERATIONS, params...)
+    best_fitness_history = Float64[]
+    convergence_speeds = Float64[]
+    for i in 1:N_RUNS
+        best_fitness, best_individual, convergence = algorithm_function(lookup_table, num_features, N_POP, N_ITERATIONS, params..., problem_best_fitness)
+        accuracy = lookup_table[features_to_index(best_individual)]
+        println("$algorithm_name: accuracy=", accuracy, 
+                ", fitness=", best_fitness, 
+                ", features used=", best_individual)
+        push!(best_fitness_history, best_fitness)
+        push!(convergence_speeds, convergence)
+    end
+    # STATS
+    success_rate = count(x -> x != Inf, convergence_speeds)
+    println("$algorithm_name: Success rate = $success_rate / $N_RUNS")
+    
+    convergence_speeds = filter(x -> x != Inf, convergence_speeds)
+    if !isempty(convergence_speeds)
+        mean_convergence = sum(convergence_speeds) / length(convergence_speeds)
+        println("$algorithm_name: Mean convergence Speed = $mean_convergence")
+    end
 
-best_features, best_fitness = particle_swarm_optimization(20, number_of_features, 50, 0.7, 1.5, 1.5, lookup_table)
-println("PSO:   accuracy=",lookup_table[features_to_index(best_individual)], ", fitness=", best_fitness, ", features used=",best_individual)
+    println("$algorithm_name: Mean Fitness = ", mean(best_fitness_history))
+    println("$algorithm_name: Standard Deviation = ", std(best_fitness_history))
+    println()
+end
+
+
+run_algorithm(simple_genetic_algorithm, "SGA", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
+run_algorithm(NSGA2, "NSGA2", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
+run_algorithm(particle_swarm_optimization, "PSO", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.7, 1.5, 1.5)
