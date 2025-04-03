@@ -6,7 +6,6 @@ include("_selection.jl")
 include("_crossover.jl")
 include("_mutation.jl")
 
-# Definizione della struttura di una particella
 mutable struct Particle
     position::Vector{Bool}      # Vettore binario che rappresenta la selezione delle caratteristiche
     velocity::Vector{Float64}   # Velocità in ogni dimensione
@@ -29,7 +28,6 @@ function initialize_particles(num_particles::Int, dim::Int, lookup_table)
         position = rand(Bool, dim)
         velocity = randn(dim)  # Velocità iniziale casuale
         best_position = copy(position)
-        # Viene valutato il fitness iniziale
         initial_fitness = evaluate_fitness(Particle(position, velocity, best_position, 0.0), lookup_table)
         push!(particles, Particle(position, velocity, best_position, initial_fitness))
     end
@@ -37,23 +35,45 @@ function initialize_particles(num_particles::Int, dim::Int, lookup_table)
 end
 
 # Aggiornamento della particella usando la formula standard di PSO adattata al binario
-function update_particle!(particle::Particle, global_best::Vector{Bool}, w::Float64, c1::Float64, c2::Float64)
+function update_particle!(particle::Particle, global_best::Vector{Bool}, local_best::Vector{Bool},
+     w::Float64, c1::Float64, c2::Float64, c3::Float64)
     dim = length(particle.position)
     for d in 1:dim
-        r1 = rand()
-        r2 = rand()
-        # Aggiornamento della velocità
+        r1, r2, r3 = rand(), rand(), rand()
+        # Update velocity
         particle.velocity[d] = w * particle.velocity[d] +
-                                c1 * r1 * (particle.best_position[d] - particle.position[d]) +
-                                c2 * r2 * (global_best[d] - particle.position[d])
+                               c1 * r1 * (particle.best_position[d] - particle.position[d]) +
+                               c2 * r2 * (global_best[d] - particle.position[d]) +
+                               c3 * r3 * (local_best[d] - particle.position[d])
         # Aggiornamento della posizione usando la funzione sigmoidea
         prob = sigmoid(particle.velocity[d])
         particle.position[d] = rand() < prob
     end
 end
 
+function hamming_distance(vec1::Vector{Bool}, vec2::Vector{Bool})::Int
+    return sum(vec1 .⊻ vec2)
+end
+
+
+function get_local_best(particles::Vector{Particle}, particle::Particle, distance_threshold::Int64)
+    best_local_particle = nothing
+    best_fitness = Inf
+    for candidate in particles
+        if candidate !== particle 
+            dist = hamming_distance(particle.position, candidate.position)
+            if dist ≤ distance_threshold && candidate.best_fitness < best_fitness
+                best_local_particle = candidate
+                best_fitness = candidate.best_fitness
+            end
+        end
+    end
+    return best_local_particle === nothing ? particle.best_position : best_local_particle.best_position
+end
+
 # Ciclo principale dell'algoritmo PSO
-function particle_swarm_optimization(lookup_table, dim::Int, num_particles::Int,  max_iter::Int, w::Float64, c1::Float64, c2::Float64, global_optimum)
+function particle_swarm_optimization(lookup_table, dim::Int, num_particles::Int,  N_ITERATIONS::Int, 
+    w::Float64, c1::Float64, c2::Float64, c3::Float64, distance_threshold::Int64, global_optimum::Float64)
     mean_fitness = Float64[]
     minimum_fitness = Float64[]
     n_iteration_required_to_best_fiteness = +Inf
@@ -69,16 +89,17 @@ function particle_swarm_optimization(lookup_table, dim::Int, num_particles::Int,
         if fitness > global_best_fitness
             global_best = copy(particle.position)
             global_best_fitness = fitness
-            push!(mean_fitness, mean(fitness))
-            push!(minimum_fitness, minimum(fitness))
         end
     end
+    push!(mean_fitness, mean(global_best_fitness))
+    push!(minimum_fitness, minimum(global_best_fitness))
     
     # Ciclo delle iterazioni
-    for iter in 1:max_iter
+    for iter in 1:N_ITERATIONS
         fitness_vector = Float64[]
         for particle in particles
-            update_particle!(particle, global_best, w, c1, c2)
+            local_best = get_local_best(particles, particle, distance_threshold)
+            update_particle!(particle, global_best, local_best, w, c1, c2, c3)
             fitness = evaluate_fitness(particle, lookup_table)
             # Aggiornamento del miglior personale della particella
             if fitness < particle.best_fitness
