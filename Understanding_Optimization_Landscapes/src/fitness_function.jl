@@ -35,7 +35,7 @@ function fitness_function(features_used, lookup_table)
     lookup_table_index = features_to_index(features_used)
     accuracy = lookup_table[lookup_table_index]
     error = 1 - accuracy
-    penalty_weight = 0.05
+    penalty_weight = 0.001
     fitness = error + penalty_weight * sum(features_used)
     return fitness, accuracy
 end
