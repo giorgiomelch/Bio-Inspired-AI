@@ -14,7 +14,7 @@ dataset_names = Dict(
     "obesity" => "ObesityDataSet_raw_and_data_sinthetic",
     "magic"   => "magic04"
 )
-selected_dataset = dataset_names["magic"]
+selected_dataset = dataset_names["wine"]
 data_path = joinpath(@__DIR__, "..", "data", selected_dataset * ".csv")
 
 # LOAD DATASET
@@ -41,16 +41,17 @@ lookup_table = load_lookup_table(selected_dataset * ".jls")
 best_accuracy = maximum(lookup_table)
 best_idx = findall(x -> x == best_accuracy, lookup_table)[1]
 best_features_bin = reverse(digits(best_idx, base=2))
+best_features_bin = vcat(best_features_bin, zeros(Int, number_of_features - length(best_features_bin)))
 println("Best ACCURACY: ", best_accuracy, ", Best features: ", best_features_bin)
 # SHOW THE BEST ACHIEVABLE FITNESS
 problem_best_fitness, problem_best_features = find_best_fitness(lookup_table, number_of_features)
-println("Best FITNESS: ", problem_best_fitness, ", with features: ", problem_best_features)
+println("Best FITNESS:  ", problem_best_fitness, ", with features: ", problem_best_features)
 println("--------------------------------------------------------------------------------------------\n")
 
 # RUN BIOLOGICAL ALGORITHMS
-N_RUNS = 50
+N_RUNS = 100
 N_POP = 20
-N_ITERATIONS = 25
+N_ITERATIONS = 30
 
 function run_algorithm(algorithm_function::Function, algorithm_name::String, lookup_table, num_features, N_POP, N_ITERATIONS, params...)
     best_fitness_history = Float64[]
@@ -77,9 +78,10 @@ function run_algorithm(algorithm_function::Function, algorithm_name::String, loo
     println("$algorithm_name: Mean Fitness = ", mean(best_fitness_history))
     println("$algorithm_name: Standard Deviation = ", std(best_fitness_history))
     println()
+    return mean(best_fitness_history), mean(convergence_speeds)
 end
 
 
-run_algorithm(simple_genetic_algorithm, "SGA", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
+#run_algorithm(simple_genetic_algorithm, "SGA", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
 run_algorithm(NSGA2, "NSGA2", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
-run_algorithm(particle_swarm_optimization, "PSO", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.7, 1.5, 1.5)
+#run_algorithm(particle_swarm_optimization, "PSO", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.9, 2.0, 2.0, 2.0, 2)
