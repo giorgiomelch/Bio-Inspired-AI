@@ -121,7 +121,6 @@ function particle_swarm_optimization(lookup_table, dim::Int, num_particles::Int,
             n_iteration_required_to_best_fiteness = iter
         end
     end
-    
-    plot_fitness_evolution(mean_fitness, minimum_fitness)
+    plot_fitness_evolution(mean_fitness, minimum_fitness, "PSO")
     return global_best_fitness, Int.(global_best), n_iteration_required_to_best_fiteness
 end

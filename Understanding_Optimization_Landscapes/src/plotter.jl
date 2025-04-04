@@ -1,19 +1,19 @@
 using Plots
 
-function plot_fitness_evolution(mean_fitness::Vector{Float64}, minimum_fitness::Vector{Float64})
+function plot_fitness_evolution(mean_fitness::Vector{Float64}, minimum_fitness::Vector{Float64}, title_string)
     p = plot(1:length(mean_fitness), mean_fitness, label="Mean fitness", lw=2, color=:blue, linestyle=:solid)
     plot!(p, 1:length(minimum_fitness), minimum_fitness, label="Minimum fitness", lw=2, color=:green, linestyle=:solid)
     xlabel!(p, "Iteration")
     ylabel!(p, "Fitness")
-    title!(p, "Fitness Evolution")
+    title!(p, title_string*" - Fitness Evolution")
     display(p)
 end
 
-function plot_humming_distance_evolution(distance::Vector{Float64})
+function plot_humming_distance_evolution(distance::Vector{Float64}, title_string)
     p = plot(1:length(distance), distance, label="Hamming distance", lw=2, color=:grey, linestyle=:solid)
     xlabel!(p, "Iteration")
     ylabel!(p, "Hamming distance")
-    title!(p, "Hamming distance Evolution")
+    title!(p, title_string*" - Hamming distance Evolution")
     display(p)
 end
 
@@ -36,7 +36,7 @@ function plot_pareto_evolution(survivors_per_iteration)
     colors = palette(:heat, length(survivors_per_iteration))
 
     for (i, (fitness, features)) in enumerate(survivors_per_iteration)
-        label = (i % 10 == 0) ? "Gen $i" : ""  
+        label = (i % 5 == 0) ? "Gen $i" : ""  
         scatter!(features, fitness, label=label, color=colors[i], markersize=3, alpha=0.6)
     end
     xlabel!("Number of features used")

@@ -38,7 +38,7 @@ function simple_genetic_algorithm(lookup_table, N_FEATURES, POPULATION_SIZE, N_I
             n_iteration_required_to_best_fiteness = i
         end
     end
-    plot_humming_distance_evolution(humming_distance)
-    plot_fitness_evolution(mean_fitness, minimum_fitness)
+    plot_humming_distance_evolution(humming_distance, "SGA")
+    plot_fitness_evolution(mean_fitness, minimum_fitness, "SGA")
     return best_fitness, best_individual, n_iteration_required_to_best_fiteness
 end

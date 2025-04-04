@@ -44,8 +44,8 @@ function NSGA2(lookup_table, N_FEATURES, POPULATION_SIZE, N_ITERATIONS, MUTATION
             n_iteration_required_to_best_fiteness = i
         end
     end
-    plot_humming_distance_evolution(humming_distance)
+    plot_humming_distance_evolution(humming_distance, "NSGA-II")
     plot_pareto_evolution(survivors_per_iteration)
-    plot_fitness_evolution(mean_fitness, minimum_fitness)
+    plot_fitness_evolution(mean_fitness, minimum_fitness, "NSGA-II")
     return best_fitness, best_individual, n_iteration_required_to_best_fiteness
 end
