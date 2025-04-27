@@ -41,7 +41,7 @@ function create_lookup_table(X, y, features_number::Int, filename::String)
     save_lookup_table(lookup_table, filename)
 end
 
-function find_best_fitness(lookup_table::Vector{Float64}, features_number::Int)
+function find_best_fitness(lookup_table, features_number::Int)
     min_fitness = +Inf
     best_features = []
     for i in 1:(2^features_number - 1)
