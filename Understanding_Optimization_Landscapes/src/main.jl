@@ -12,28 +12,32 @@ using CSV, DataFrames, Random, Statistics
 dataset_names = Dict(
     "wine"    => "winequality-white",
     "obesity" => "ObesityDataSet_raw_and_data_sinthetic",
-    "magic"   => "magic04"
+    "magic"   => "magic04",
+    "magic_r"   => "magic04_redundancy",
+    "heart"   => "processed_cleveland",
+    "zoo"     => "zoo",
 )
-selected_dataset = dataset_names["wine"]
+selected_dataset = dataset_names["obesity"]
 data_path = joinpath(@__DIR__, "..", "data", selected_dataset * ".csv")
 
 # LOAD DATASET
 df = CSV.read(data_path, DataFrame; header=true, delim=';')
 X = Matrix(select(df, Not(last(names(df)))))
+
 y = df[!, last(names(df))]  
 number_of_features = size(X, 2)
 
-# -------------------------------------------------------------------------
-# LOOKUP TABLE
+# --------------------------------------------------letter-recognitiond.csv
 # -------------------------------------------------------------------------
 # Commented because it takes a lot of time
 # CREATE LOOKUP TABLE
 #create_lookup_table(X, y, 16, "ObesityDataSet_raw_and_data_sinthetic.jls")
 #create_lookup_table(X, y, 11, "winequality-white.jls")
 #create_lookup_table(X, y, 10, "magic04.jls")
+#create_lookup_table(X, y, 15, "magic04_redundancy.jls")
+#create_lookup_table(X, y, 16, "letter_recognition.jls")
 # LOAD LOOKUP TABLE
 lookup_table = load_lookup_table(selected_dataset * ".jls")
-
 # -------------------------------------------------------------------------
 # BENCHMARK TO REACH
 # -------------------------------------------------------------------------
@@ -82,6 +86,6 @@ function run_algorithm(algorithm_function::Function, algorithm_name::String, loo
 end
 
 
-#run_algorithm(simple_genetic_algorithm, "SGA", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
+run_algorithm(simple_genetic_algorithm, "SGA", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
 run_algorithm(NSGA2, "NSGA2", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.8)
-#run_algorithm(particle_swarm_optimization, "PSO", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.9, 2.0, 2.0, 2.0, 2)
+run_algorithm(particle_swarm_optimization, "PSO", lookup_table, number_of_features, N_POP, N_ITERATIONS, 0.9, 2.0, 2.0, 2.0, 2)
