@@ -28,9 +28,54 @@ function random_forest(features_used, X, y)
     return accuracy
 end
 
+
+function evaluate_individual_step_six(features_used, X, y)
+    X = X[:, features_used .== 1]
+    # Dataset splitting con seed 123 e MersenneTwister
+    split_rng = MersenneTwister(123)
+    idx = randperm(split_rng, size(X, 1))
+    train_size = round(Int, 0.7 * size(X, 1))
+    train_idx = idx[1:train_size]
+    test_idx = idx[train_size+1:end]
+    X_train, X_test = X[train_idx, :], X[test_idx, :]
+    y_train, y_test = y[train_idx], y[test_idx]
+
+    rng_forest = Xoshiro(456)  # Seed specifico per la foresta
+
+    n_subfeatures = -1       # sqrt(#features)
+    n_trees = 30             # 30 alberi (anziché 10 di default)
+    partial_sampling = 1.0    # beta=0 (tutti i campioni per tutti gli alberi)
+    max_depth = -1           # nessun limite
+    min_samples_leaf = 2      # (anziché 5 di default)
+    min_samples_split = 2     # default
+    min_purity_increase = 0.0 # default
+
+    model = build_forest(
+            y_train,
+            X_train,
+            n_subfeatures,
+            n_trees,
+            partial_sampling,
+            max_depth,
+            min_samples_leaf,
+            min_samples_split,
+            min_purity_increase;
+            rng = rng_forest
+        )
+    y_pred = apply_forest(model, X_test)
+    accuracy = mean(y_pred .== y_test)
+    return accuracy
+end
+
 function fitness_function(features_used, lookup_table)
     if all(x -> x == 0, features_used)
         return +1.0, 0.0
+    end
+    if size(lookup_table)[1] == 0
+        accuracy = evaluate_individual_step_six(features_used, X, y)
+        penalty_weight = 1/8
+        fitness = (1.0 - accuracy) + penalty_weight * sum(features_used)
+        return fitness, accuracy
     end
     lookup_table_index = features_to_index(features_used)
     accuracy = lookup_table[lookup_table_index]
