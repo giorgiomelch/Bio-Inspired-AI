@@ -71,9 +71,10 @@ function fitness_function(features_used, lookup_table)
     if all(x -> x == 0, features_used)
         return +1.0, 0.0
     end
+    # Questo if è necessario per lo step n six per eviatere di usare lookup_table e usare il random forest richiesto nel problema
     if size(lookup_table)[1] == 0
         accuracy = evaluate_individual_step_six(features_used, X, y)
-        penalty_weight = 1/8
+        penalty_weight = 1/8 # 0 , 1/64
         fitness = (1.0 - accuracy) + penalty_weight * sum(features_used)
         return fitness, accuracy
     end
