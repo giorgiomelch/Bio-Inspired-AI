@@ -21,7 +21,6 @@ This repository contains implementations of genetic algorithms to solve various 
 
 ## How to Run
 
-### Easy Problems
 1. Navigate to the folder of the desired problem (e.g., `Understanding_Optimization_Landscapes/src/`).
 2. Run the `main.jl` file:
    ```bash
